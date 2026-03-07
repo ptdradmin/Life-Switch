@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://life-switch-mvp-2026.web.app/logo.png" alt="Life Switch Logo" width="120" />
+  <img src="https://raw.githubusercontent.com/ptdradmin/Life-Switch/main/public/favicon.png" alt="Life Switch Logo" width="120" />
   
   # 🔐 Life Switch
   ### *Your Digital Legacy, Reimagined & Secured.*
@@ -13,7 +13,7 @@
 
   **Life Switch** est une plateforme commerciale de succession numérique garantissant la transmission sécurisée de vos secrets, identifiants et documents à vos proches en cas d'impossibilité de répondre.
 
-  [Découvrir l'App](https://life-switch-mvp-2026.web.app) • [Documentation](#-stack-technique) • [Sécurité](#-architecture-zero-knowledge)
+  [Découvrir l'App](https://life-switch-mvp-2026.web.app) • [Contribuer](CONTRIBUTING.md) • [Sécurité](#-architecture-zero-knowledge)
 </div>
 
 ## 💎 Fonctionnalités Elite
@@ -62,7 +62,7 @@ npm run dev
 
 ## ⚖️ Licence & Commercialisation
 
-Propulsé sous licence **GPLv3**. Solution prête pour un déploiement commercial à grande échelle. Pour toute demande de partenariat ou licence entreprise, contactez-nous via le support de l'application.
+Propulsé sous licence **GPLv3**. Solution prête pour un déploiement commercial à grande échelle. Pour en savoir plus sur la manière de participer au projet, consultez notre fichier [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
