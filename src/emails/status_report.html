@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre Rapport de Sécurité Mensuel - Life Switch</title>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #0d0d0d;
+            color: #f8fafc;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #111;
+            border-radius: 40px;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+        .header {
+            background: #161616;
+            padding: 48px 32px;
+            text-align: center;
+            border-bottom: 1px solid #262626;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 0.2em;
+        }
+
+        .content {
+            padding: 48px 48px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .stat-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 120px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #262626;
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: #6366f1;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            font-weight: 900;
+            color: #71717a;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 4px;
+        }
+
+        .health-bar {
+            height: 8px;
+            background: #262626;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .health-progress {
+            height: 100%;
+            background: #10b981;
+
+            width: {
+                    {
+                    security_score
+                }
+            }
+
+            %;
+        }
+
+        .footer {
+            padding: 40px;
+            text-align: center;
+            font-size: 11px;
+            color: #4b5563;
+            background: #0a0a0a;
+        }
+
+        .info-item {
+            display: flex;
+            margin-bottom: 24px;
+            align-items: flex-start;
+        }
+
+        .info-text {
+            margin-left: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #d1d5db;
+        }
+
+        .info-title {
+            font-weight: 800;
+            color: #fff;
+            display: block;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">LIFE SWITCH PROTOCOL</div>
+        </div>
+        <div class="content">
+            <h1>Rapport de Sécurité : {{month}}</h1>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-value">{{secrets_count}}</span>
+                    <span class="stat-label">Secrets</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">{{contacts_count}}</span>
+                    <span class="stat-label">Relais</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">{{last_check}}</span>
+                    <span class="stat-label">Dernier Pulse</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 40px;">
+                <span class="stat-label" style="display: block; margin-bottom: 12px;">Indice de protection
+                    globale</span>
+                <div class="health-bar">
+                    <div class="health-progress"></div>
+                </div>
+                <p style="font-size: 14px; color: #10b981; font-weight: 700; text-align: right;">Excellent
+                    ({{security_score}}%)</p>
+            </div>
+
+            <div class="info-item">
+                <div style="font-size: 20px;">🛡️</div>
+                <div class="info-text">
+                    <span class="info-title">Chiffrement Vérifié</span>
+                    L'intégrité de votre coffre-fort a été vérifiée avec succès. Toutes vos données restent protégées
+                    par vos clés privées.
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div style="font-size: 20px;">👥</div>
+                <div class="info-text">
+                    <span class="info-title">Vigilance Active</span>
+                    Vos bénéficiaires sont prêts à prendre le relais si nécessaire. Pensez à vérifier régulièrement
+                    leurs coordonnées.
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="https://life-switch.app/home"
+                    style="color: #6366f1; font-weight: 800; text-decoration: none; font-size: 14px;">Accéder à mon
+                    tableau de bord →</a>
+            </div>
+        </div>
+        <div class="footer">
+            <p>Ce rapport est envoyé mensuellement pour garantir que votre héritage numérique est toujours opérationnel.
+            </p>
+            <p>&copy; 2026 Life Switch Protocol • Protection Non-Stop.</p>
+        </div>
+    </div>
+</body>
+
+</html>

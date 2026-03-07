@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 216 20% 97%;
+    --foreground: 220 20% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 20%;
+
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 216 20% 95%;
+    --secondary-foreground: 220 20% 20%;
+
+    --muted: 216 20% 95%;
+    --muted-foreground: 220 10% 50%;
+
+    --accent: 160 60% 92%;
+    --accent-foreground: 160 84% 25%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 216 20% 90%;
+    --input: 216 20% 90%;
+    --ring: 160 84% 39%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 160 60% 92%;
+    --sidebar-accent-foreground: 160 84% 25%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 160 84% 39%;
+  }
+
+  .dark {
+    --background: 220 20% 8%;
+    --foreground: 216 20% 95%;
+
+    --card: 220 20% 12%;
+    --card-foreground: 216 20% 95%;
+
+    --popover: 220 20% 12%;
+    --popover-foreground: 216 20% 95%;
+
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 20% 16%;
+    --secondary-foreground: 216 20% 95%;
+
+    --muted: 220 20% 16%;
+    --muted-foreground: 216 15% 60%;
+
+    --accent: 160 40% 18%;
+    --accent-foreground: 160 60% 80%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 18%;
+    --input: 220 20% 18%;
+    --ring: 160 84% 39%;
+
+    --sidebar-background: 220 20% 10%;
+    --sidebar-foreground: 216 20% 90%;
+    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 160 40% 18%;
+    --sidebar-accent-foreground: 160 60% 80%;
+    --sidebar-border: 220 20% 18%;
+    --sidebar-ring: 160 84% 39%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .pulse-glow {
+    animation: pulse-glow 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px 0 hsl(160 84% 39% / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px 15px hsl(160 84% 39% / 0.15);
+  }
+}

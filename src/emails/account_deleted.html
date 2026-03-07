@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de suppression - Life Switch</title>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #0d0d0d;
+            color: #f8fafc;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #161616;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid #262626;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            background: #1a1a1a;
+            padding: 40px 32px;
+            text-align: center;
+            border-bottom: 1px solid #262626;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 0.2em;
+            color: #fff;
+            opacity: 0.5;
+        }
+
+        .content {
+            padding: 48px 48px;
+            text-align: left;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            color: #3b82f6;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #a1a1aa;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .wipe-notice {
+            background: rgba(239, 68, 68, 0.05);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(239, 68, 68, 0.1);
+        }
+
+        .wipe-notice ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #ef4444;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .wipe-notice li {
+            margin: 8px 0;
+        }
+
+        .footer {
+            padding: 32px;
+            text-align: center;
+            font-size: 11px;
+            color: #52525b;
+            background: #0a0a0a;
+            border-top: 1px solid #262626;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">LIFE SWITCH</div>
+        </div>
+        <div class="content">
+            <div class="status-badge">SUPPRESSION DÉFINITIVE EFFECTUÉE</div>
+            <h1>Vos données ont été effacées.</h1>
+            <p>Bonjour {{name}},<br>Conformément à votre demande, toutes vos données personnelles et vos contenus
+                chiffrés ont été définitivement supprimés de nos serveurs.</p>
+
+            <div class="wipe-notice">
+                <ul>
+                    <li>Compte utilisateur supprimé</li>
+                    <li>Coffre-fort et secrets purgés</li>
+                    <li>Documents et médias effacés</li>
+                    <li>Liste de bénéficiaires supprimée</li>
+                </ul>
+            </div>
+
+            <p style="margin-top: 32px;">Le protocole de suppression respecte les normes de confidentialité les plus
+                strictes. Aucune copie de sauvegarde n'est conservée. Cette action est irréversible.</p>
+            <p>Nous vous remercions de la confiance que vous nous avez témoignée.</p>
+        </div>
+        <div class="footer">
+            <p>Conformité RGPD garantie • Article 17 "Droit à l'oubli".</p>
+            <p>&copy; 2026 Life Switch Protocol.</p>
+        </div>
+    </div>
+</body>
+
+</html>

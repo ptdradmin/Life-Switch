@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerte de sécurité - Life Switch</title>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #0d0d0d;
+            color: #f8fafc;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #161616;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid #262626;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            background: #f59e0b;
+            padding: 32px;
+            text-align: center;
+        }
+
+        .content {
+            padding: 48px 48px;
+            text-align: left;
+        }
+
+        .alert-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+            display: block;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .info-card {
+            background: #1a1a1a;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid #333;
+            margin: 24px 0;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .info-label {
+            color: #52525b;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #a1a1aa;
+            font-size: 15px;
+        }
+
+        .btn-warning {
+            display: block;
+            text-align: center;
+            padding: 16px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            color: #ef4444;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .footer {
+            padding: 32px;
+            text-align: center;
+            font-size: 11px;
+            color: #52525b;
+            background: #0a0a0a;
+            border-top: 1px solid #262626;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <span style="font-size: 24px;">🛡️</span>
+        </div>
+        <div class="content">
+            <h1>Nouvel appareil détecté</h1>
+            <p>Bonjour {{name}},<br>Une nouvelle connexion a été détectée sur votre compte Life Switch. S'agit-il bien
+                de vous ?</p>
+
+            <div class="info-card">
+                <div class="info-row">
+                    <span class="info-label">Appareil</span>
+                    <span class="info-value">{{device_name}}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Localisation</span>
+                    <span class="info-value">{{location}}</span>
+                </div>
+                <div class="info-row" style="margin-bottom: 0;">
+                    <span class="info-label">Heure</span>
+                    <span class="info-value">{{timestamp}}</span>
+                </div>
+            </div>
+
+            <p style="margin-bottom: 32px;">Si c'est vous, vous pouvez ignorer cet email. Si vous ne reconnaissez pas
+                cette activité, votre compte a peut-être été compromis.</p>
+
+            <a href="https://life-switch.app/settings/security" class="btn-warning">Ce n'est pas moi — Sécuriser mon
+                compte</a>
+        </div>
+        <div class="footer">
+            <p>Cet email vous est envoyé pour protéger la sécurité de votre héritage numérique.</p>
+            <p>&copy; 2026 Life Switch • Vigilance System</p>
+        </div>
+    </div>
+</body>
+
+</html>

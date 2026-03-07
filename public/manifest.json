@@ -1,0 +1,31 @@
+{
+    "name": "Life Switch",
+    "short_name": "Life Switch",
+    "description": "Protégez votre héritage numérique. Transmettez vos secrets à ceux qui comptent.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0a0a",
+    "theme_color": "#10B981",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/favicon.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/favicon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "productivity",
+        "utilities",
+        "lifestyle"
+    ],
+    "lang": "fr",
+    "dir": "auto"
+}

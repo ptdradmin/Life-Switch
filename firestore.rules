@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allows users to only read and write their own profile
+    match /profiles/{userId} {
+      allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allows users to manage their own contacts
+    match /contacts/{contactId} {
+      allow read, write, delete: if request.auth != null && (
+        (request.method == 'create' && request.resource.data.user_id == request.auth.uid) ||
+        (resource.data.user_id == request.auth.uid)
+      );
+    }
+    
+    // Allows users to manage their own secrets
+    match /secrets/{secretId} {
+      allow read, write, delete: if request.auth != null && (
+        (request.method == 'create' && request.resource.data.user_id == request.auth.uid) ||
+        (resource.data.user_id == request.auth.uid)
+      );
+    }
+  }
+}

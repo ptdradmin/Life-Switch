@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accès Prioritaire : Life Switch Transmission</title>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #0d0d0d;
+            color: #f8fafc;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #111;
+            border-radius: 40px;
+            overflow: hidden;
+            border: 1px solid #c4b5fd;
+            box-shadow: 0 40px 100px -20px rgba(139, 92, 246, 0.2);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4c1d95 0%, #1e1b4b 100%);
+            padding: 60px 32px;
+            text-align: center;
+            border-bottom: 1px solid rgba(196, 181, 253, 0.2);
+        }
+
+        .key-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: inline-block;
+            filter: drop-shadow(0 0 10px #c4b5fd);
+        }
+
+        .content {
+            padding: 48px 48px;
+            text-align: left;
+        }
+
+        .message-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 32px;
+            border-radius: 24px;
+            margin: 32px 0;
+            border-left: 4px solid #c4b5fd;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            line-height: 1.8;
+            color: #a1a1aa;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .legacy-name {
+            color: #fff;
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            padding: 20px 0;
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            border-radius: 24px;
+            font-weight: 900;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+            border: 1px solid #fff;
+        }
+
+        .footer {
+            padding: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #52525b;
+            background: #0a0a0a;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .notice {
+            font-size: 13px;
+            font-style: italic;
+            color: #71717a;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="key-icon">🗝️</div>
+            <div
+                style="font-size: 11px; font-weight: 900; color: #c4b5fd; text-transform: uppercase; letter-spacing: 0.4em;">
+                Notification Officielle</div>
+        </div>
+        <div class="content">
+            <h1>Bonjour {{beneficiary_name}},</h1>
+            <p>Vous recevez ce message car vous avez été désigné comme bénéficiaire de confiance par :</p>
+
+            <div class="message-box">
+                <span class="legacy-name">{{user_name}}</span>
+                <p style="margin-top: 10px; margin-bottom: 0; font-size: 14px;">« Je vous confie les clés de mon
+                    héritage numérique. Life Switch vous donnera accès à mes secrets les plus importants. »</p>
+            </div>
+
+            <p>Le timer de vigilance de <strong>{{user_name}}</strong> est arrivé à expiration après une période
+                d'absence prolongée. Conformément à ses volontés, le protocole de transmission a été déclenché.</p>
+
+            <a href="https://life-switch.app/access/{{access_token}}" class="btn">Accéder à l'Héritage Numérique</a>
+
+            <p class="notice">Pour des raisons de sécurité, ce lien expira dans 72h. Ce contenu est strictement
+                confidentiel et chiffré de bout en bout.</p>
+        </div>
+        <div class="footer">
+            <p>Life Switch Protocol • La garde de vos secrets les plus précieux.</p>
+            <p>&copy; 2026 Life Switch • SIREN 000-000-000</p>
+        </div>
+    </div>
+</body>
+
+</html>
