@@ -1,66 +1,72 @@
-# 🔐 Life Switch — Heritage & Digital Legacy
+<div align="center">
+  <img src="https://life-switch-mvp-2026.web.app/logo.png" alt="Life Switch Logo" width="120" />
+  
+  # 🔐 Life Switch
+  ### *Your Digital Legacy, Reimagined & Secured.*
+  
+  [![Version](https://img.shields.io/badge/Version-1.2.0-00df9a?style=for-the-badge)](https://github.com/ptdradmin/Life-Switch)
+  [![Security](https://img.shields.io/badge/Security-AES--256-blue?style=for-the-badge)](https://github.com/ptdradmin/Life-Switch)
+  [![Languages](https://img.shields.io/badge/Languages-12--Supported-orange?style=for-the-badge)](https://github.com/ptdradmin/Life-Switch)
+  [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Mobile-8A2BE2?style=for-the-badge)](https://github.com/ptdradmin/Life-Switch)
 
-**Life Switch** est une plateforme commerciale de succession numérique sécurisée permettant de transmettre vos secrets, mots de passe, documents et messages importants à vos proches en cas d'absence prolongée ou de décès. 
+  ---
 
-![Version](https://img.shields.io/badge/Status-Version%201.2.0-emerald)
-![Encryption](https://img.shields.io/badge/Security-AES--256-blue)
-![Languages](https://img.shields.io/badge/Languages-12%20Supported-orange)
-![License](https://img.shields.io/badge/License-GPLv3-lightgrey)
+  **Life Switch** est une plateforme commerciale de succession numérique garantissant la transmission sécurisée de vos secrets, identifiants et documents à vos proches en cas d'impossibilité de répondre.
 
-## ✨ Fonctionnalités Professionnelles
+  [Découvrir l'App](https://life-switch-mvp-2026.web.app) • [Documentation](#-stack-technique) • [Sécurité](#-architecture-zero-knowledge)
+</div>
 
-- **🛡️ Sécurité de Niveau Militaire**: Chiffrement **AES-256** de bout en bout (Zero-Knowledge). Vos données sont chiffrées localement sur votre appareil avant toute transmission. Même nos administrateurs ne peuvent pas lire vos messages.
-- **🌍 Internationalisation Native**: Interface 100% traduite et localisée dans **12 langues** (FR, EN, ES, DE, IT, PT, AR, ZH, JA, RU, NL, TR) pour une portée mondiale.
-- **⏱️ Protocole Smart Pulse**: Un système de "Pulse" (bouton de confirmation de présence) personnalisable. En cas d'expiration du timer, vos bénéficiaires désignés reçoivent automatiquement un accès sécurisé à vos secrets.
-- **🤖 Carnet AI**: Un assistant intelligent analysant votre score de sécurité et votre héritage numérique pour vous conseiller en temps réel, tout en respectant votre vie privée.
-- **📂 Coffre-fort Hybride**: Stockage haute performance pour messages, codes, documents, photos et vidéos.
-- **🔔 Système de Notification Cross-Platform**: Alertes intelligentes (Web & Mobile) via Firebase Cloud Messaging pour garantir que vous ne manquiez jamais un "Pulse".
-- **🔒 Authentification Biométrique**: Support natif de FaceID et TouchID sur mobile via Capacitor.
+## 💎 Fonctionnalités Elite
 
-## 🛠️ Stack Technique (Multi-Cloud)
+| Fonctionnalité | Description |
+| :--- | :--- |
+| **🛡️ Zero-Knowledge** | Chiffrement AES-256 local. Vos données sont illisibles même pour nous. |
+| **🌍 World Ready** | Interface localisée en **12 langues** (FR, EN, ES, DE, IT, PT, AR, ZH, JA, RU, NL, TR). |
+| **⏱️ Smart Pulse** | Protocole d'inactivité intelligent avec déclenchement automatique vers vos bénéficiaires. |
+| **🤖 Carnet AI** | Assistant prédictif analysant vos émotions et votre score de sécurité en temps réel. |
+| **📂 Coffre Hybride** | Stockage haute fidélité pour textes, codes, photos et vidéos 4K. |
+| **🔒 Biométrie** | Accès sécurisé par FaceID/TouchID nativement intégré via Capacitor. |
 
-L'architecture de Life Switch repose sur une pile technologique hybride garantissant vitesse, sécurité et fiabilité :
+## 🛠️ Infrastructure Multi-Cloud
 
-- **Frontend**: Vite, React 18, TypeScript, Tailwind CSS
-- **Design System**: Shadcn/ui & Framer Motion (Animations Premium)
-- **Hébergement & Auth**: Firebase Hosting & Firebase Auth
-- **Base de données**: Firebase Firestore (Temps réel & Off-line)
-- **Stockage Cloud**: Supabase Storage (Bucket hautement sécurisé)
-- **IA**: OpenRouter & Groq (Modèles LLM avancés via API sécurisée)
-- **Mobile SDK**: Capacitor JS (Android & iOS)
-- **Localisation**: i18next avec synchronisation automatisée des locales
+L'architecture de Life Switch repose sur une synergie technologique de pointe pour une fiabilité absolue :
+
+- **Cœur Applicatif** : `React 18` + `TypeScript` + `Vite`
+- **Design Premium** : `Tailwind CSS` + `Framer Motion` + `Shadcn/ui`
+- **Identity & Realtime** : `Firebase Auth` & `Cloud Firestore`
+- **Cloud Storage** : `Supabase Storage` (Buckets isolés et chiffrés)
+- **Calcul IA** : `OpenRouter` & `Groq` (Inférence ultra-rapide)
+- **Native Bridge** : `Capacitor JS` for iOS & Android
+- **Localisation** : `i18next` avec injection dynamique
 
 ## 🧠 Architecture Zero-Knowledge
 
-La confidentialité n'est pas une option, c'est notre fondation :
+> "Your privacy is our code."
 
-1.  **Chiffrement Client-Side** : Vos secrets sont chiffrés par `CryptoJS` avant de quitter votre navigateur/téléphone.
-2.  **Clés Uniques** : Chaque utilisateur génère ses propres clés de chiffrement basées sur son identité et des sels de sécurité dynamiques.
-3.  **Libération Automatisée** : Le protocole de transmission aux bénéficiaires est sécurisé par des règles de sécurité Firestore strictes et des fonctions cloud surveillant le timer d'inactivité.
+1. **Encryption at Edge** : Les secrets sont chiffrés via `CryptoJS` avant de quitter l'appareil.
+2. **Key Derivation** : Utilisation de sels dynamiques et de l'UID Firebase pour une entropie maximale.
+3. **Decentralized Storage** : Séparation stricte entre les métadonnées (Firestore) et les assets lourds (Supabase).
 
-## 🚀 Installation et Lancement (Développement)
+## 🚀 Guide de Démarrage Rapide
 
-Le projet nécessite Node.js 18+.
-
-```sh
-# 1. Cloner le dépôt
+```bash
+# 1. Clonez l'excellence
 git clone https://github.com/ptdradmin/Life-Switch.git
-cd Life-Switch
 
-# 2. Installation
+# 2. Installez le moteur
 npm install
 
-# 3. Environnement
-# Configurez vos clés Firebase (API_KEY, AUTH_DOMAIN, etc.) et Supabase dans le fichier .env
-cp .env.example .env
-
-# 4. Exécution
+# 3. Allumez les propulseurs
 npm run dev
 ```
 
-## ⚖️ Licence et Commercialisation
+## ⚖️ Licence & Commercialisation
 
-Ce projet est sous licence **GPLv3**. Pour toute demande concernant une utilisation commerciale spécifique ou des services de support Entreprise, veuillez nous contacter.
+Propulsé sous licence **GPLv3**. Solution prête pour un déploiement commercial à grande échelle. Pour toute demande de partenariat ou licence entreprise, contactez-nous via le support de l'application.
 
 ---
-*Life Switch — Parce que votre héritage numérique mérite la plus haute protection.*
+
+<div align="center">
+  <sub>© 2026 Life Switch. Tous droits réservés. <br> 
+  <i>Parce que votre héritage mérite une forteresse numérique.</i></sub>
+</div>
