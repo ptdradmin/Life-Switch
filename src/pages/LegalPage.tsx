@@ -48,7 +48,7 @@ export default function LegalPage() {
                 <div className="absolute bottom-0 left-[-10%] w-[350px] h-[350px] bg-primary/5 rounded-full blur-[80px]" />
             </div>
 
-            <div className="mx-auto max-w-sm relative z-10 space-y-10">
+            <div className="mx-auto max-w-sm sm:max-w-2xl lg:max-w-5xl relative z-10 space-y-10">
                 {/* Back & Title */}
                 <div className="space-y-6">
                     <motion.button
@@ -77,7 +77,7 @@ export default function LegalPage() {
                                 </h1>
                                 <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 mt-1">
                                     <Calendar className="h-3 w-3" />
-                                    Mise à jour • {lastUpdate}
+                                    {t("legal_page.updated_at")}{t("legal_page.last_update_date")}
                                 </div>
                             </div>
                         </div>
@@ -100,12 +100,12 @@ export default function LegalPage() {
                             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/20 backdrop-blur-md border border-white/10">
                                 <CheckCircle2 className="h-5 w-5 text-primary" />
                             </div>
-                            <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-60">SOUVERAINETÉ NUMÉRIQUE</p>
+                            <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-60">{t("legal_page.sovereignty")}</p>
                         </div>
                         <p className="text-lg font-black leading-[1.3] tracking-tight text-white">
                             {isPrivacy
-                                ? "Votre vie privée est le fondement de notre architecture. Nous ne voyons rien. Nous ne savons rien."
-                                : "En utilisant Life Switch, vous placez votre héritage numérique sous protection cryptographique de haut niveau."}
+                                ? t("legal_page.privacy_engagement")
+                                : t("legal_page.tos_engagement")}
                         </p>
                         <div className="flex items-center gap-2 pt-2">
                             <div className="h-[2px] w-8 bg-primary/50" />
@@ -115,51 +115,51 @@ export default function LegalPage() {
                 </motion.div>
 
                 {/* Dynamic Content Sections */}
-                <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {!isPrivacy ? (
                         <>
                             <Section
                                 idx={0}
                                 icon={Globe}
-                                title="1. Étendue du Service"
-                                content="Life Switch est une plateforme de transmission post-mortem automatisée. Le service garantit la délivrance sécurisée de vos données archivées à vos bénéficiaires après la confirmation irréfutable de votre absence prolongée via notre protocole de Pulse."
+                                title={t("legal_page.tos_section_1_title")}
+                                content={t("legal_page.tos_section_1_content")}
                             />
                             <Section
                                 idx={1}
                                 icon={UserCheck}
-                                title="2. Utilisation Responsable"
-                                content="Vous détenez la pleine propriété et responsabilité des contenus stockés. L'utilisation du service pour le stockage de données illicites, haineuses ou violant les droits de propriété intellectuelle de tiers est strictement prohibée et entraîne la clôture immédiate du compte."
+                                title={t("legal_page.tos_section_2_title")}
+                                content={t("legal_page.tos_section_2_content")}
                             />
                             <Section
                                 idx={2}
                                 icon={Fingerprint}
-                                title="3. Propriété & Chiffrement"
+                                title={t("legal_page.tos_section_3_title")}
                                 highlight
-                                content="Zéro Connaissance : Toutes les données sont chiffrées localement (AES-256) avant synchronisation. Life Switch ne possède jamais vos clés de chiffrement. En cas de perte de votre mot de passe maître sans phrase de récupération, vos données seront techniquement irrécupérables."
+                                content={t("legal_page.tos_section_3_content")}
                             />
                             <Section
                                 idx={3}
                                 icon={AlertCircle}
-                                title="4. Limites de Garantie"
-                                content="L'efficacité de la transmission dépend de l'exactitude des informations fournies pour vos bénéficiaires. Life Switch ne peut être tenu responsable d'une non-délivrance due à des coordonnées obsolètes (emails invalides, numéros de téléphone supprimés)."
+                                title={t("legal_page.tos_section_4_title")}
+                                content={t("legal_page.tos_section_4_content")}
                             />
                             <Section
                                 idx={4}
                                 icon={HardDrive}
-                                title="5. Capacité & Stockage"
-                                content="Les comptes gratuits possèdent une limite de stockage définie. Le dépassement de ces quotas peut bloquer la création de nouveaux secrets. Les abonnements Premium permettent d'étendre ces limites et d'augmenter le nombre de bénéficiaires actifs."
+                                title={t("legal_page.tos_section_5_title")}
+                                content={t("legal_page.tos_section_5_content")}
                             />
                             <Section
                                 idx={5}
                                 icon={Trash2}
-                                title="6. Inactivité & Suppression"
-                                content="Un compte sans 'Pulse' valide pendant plus d'un an après la transmission réussie de son héritage peut être archivé ou supprimé pour libérer des ressources d'infrastructure, après notifications répétées aux bénéficiaires et à l'utilisateur."
+                                title={t("legal_page.tos_section_6_title")}
+                                content={t("legal_page.tos_section_6_content")}
                             />
                             <Section
                                 idx={6}
                                 icon={Scale}
-                                title="7. Juridiction & Litiges"
-                                content="Les présentes conditions sont soumises au droit international. Tout litige relatif à l'interprétation ou l'exécution du service sera porté devant les tribunaux compétents de la juridiction de l'éditeur de l'application."
+                                title={t("legal_page.tos_section_7_title")}
+                                content={t("legal_page.tos_section_7_content")}
                             />
                         </>
                     ) : (
@@ -167,45 +167,45 @@ export default function LegalPage() {
                             <Section
                                 idx={0}
                                 icon={Lock}
-                                title="A. Architecture d'Encapsulation"
+                                title={t("legal_page.privacy_section_a_title")}
                                 highlight
-                                content="Vos secrets sont scellés dans un coffre-fort cryptographique. L'architecture est conçue pour que les données en clair ne quittent jamais votre appareil sans être préalablement transformées par vos clés privées uniques."
+                                content={t("legal_page.privacy_section_a_content")}
                             />
                             <Section
                                 idx={1}
                                 icon={Info}
-                                title="B. Collecte Minimale"
-                                content="Nous appliquons le principe de minimisation des données. Nous collectons uniquement les métadonnées essentielles : email de connexion, identifiants de bénéficiaires et logs de connexion anonymisés pour la sécurité du compte."
+                                title={t("legal_page.privacy_section_b_title")}
+                                content={t("legal_page.privacy_section_b_content")}
                             />
                             <Section
                                 idx={2}
                                 icon={ShieldCheck}
-                                title="C. Droit à l'Oubli Intégral"
-                                content="Conformément au RGPD, la suppression de votre compte depuis les paramètres déclenche un processus de 'Wipe' immédiat. Toutes les occurrences de vos données sur nos serveurs et sauvegardes froides sont définitivement effacées sous 30 jours."
+                                title={t("legal_page.privacy_section_c_title")}
+                                content={t("legal_page.privacy_section_c_content")}
                             />
                             <Section
                                 idx={3}
                                 icon={Globe}
-                                title="D. Localisation des Serveurs"
-                                content="Vos données sont hébergées sur des infrastructures hautement redondantes situées exclusivement au sein de l'Union Européenne (Zone RGPD), bénéficiant des protections juridiques les plus strictes au monde."
+                                title={t("legal_page.privacy_section_d_title")}
+                                content={t("legal_page.privacy_section_d_content")}
                             />
                             <Section
                                 idx={4}
                                 icon={Zap}
-                                title="E. Absence de Profilage"
-                                content="Life Switch est un service d'utilité publique numérique. Nous ne vendons pas vos données, n'utilisons pas de cookies publicitaires et n'effectuons aucun profilage algorithmique à des fins commerciales."
+                                title={t("legal_page.privacy_section_e_title")}
+                                content={t("legal_page.privacy_section_e_content")}
                             />
                             <Section
                                 idx={5}
                                 icon={Mail}
-                                title="F. Sécurité des Communications"
-                                content="Les messages envoyés à vos bénéficiaires sont transmis via des tunnels TLS sécurisés. Nous recommandons à vos proches de configurer une double authentification sur leurs propres services de messagerie pour une sécurité optimale."
+                                title={t("legal_page.privacy_section_f_title")}
+                                content={t("legal_page.privacy_section_f_content")}
                             />
                             <Section
                                 idx={6}
                                 icon={ShieldAlert}
-                                title="G. Audit & Transparence"
-                                content="Notre infrastructure subit des tests de pénétration réguliers. Toute faille de sécurité majeure détectée sera notifiée aux utilisateurs concernés dans les 72 heures, conformément aux directives européennes."
+                                title={t("legal_page.privacy_section_g_title")}
+                                content={t("legal_page.privacy_section_g_content")}
                             />
                         </>
                     )}
@@ -225,7 +225,7 @@ export default function LegalPage() {
                         </div>
                     </div>
                     <div>
-                        <p className="text-[11px] font-black uppercase tracking-[0.4em] text-emerald-600">CERTIFIÉ SÉCURISÉ</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.4em] text-emerald-600">{t("legal_page.certified")}</p>
                         <p className="text-[10px] font-bold text-muted-foreground/60 mt-1 uppercase tracking-widest">Protocol Version 1.0.4 • AES-256-GCM</p>
                     </div>
                 </motion.div>
@@ -237,7 +237,7 @@ export default function LegalPage() {
                     className="rounded-[36px] bg-secondary/30 p-10 text-center space-y-6 border border-white/5 backdrop-blur-md"
                 >
                     <div className="space-y-4">
-                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Questions Juridiques ?</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{t("legal_page.legal_questions")}</p>
                         <a href="mailto:support@life-switch.app" className="group flex flex-col items-center gap-2">
                             <span className="text-lg font-black text-foreground group-hover:text-primary transition-colors tracking-tight">support@life-switch.app</span>
                             <span className="h-1 w-12 bg-primary/20 rounded-full group-hover:w-24 transition-all duration-500" />
@@ -245,7 +245,7 @@ export default function LegalPage() {
                     </div>
                     <div className="pt-4 border-t border-white/5 space-y-3">
                         <p className="text-[10px] text-muted-foreground/60 leading-relaxed font-bold uppercase tracking-tighter">
-                            Pour les utilisateurs iOS, les conditions standard d'Apple (EULA) s'appliquent en complément de nos CGU.
+                            {t("legal_page.apple_eula_note")}
                         </p>
                         <a
                             href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
@@ -253,7 +253,7 @@ export default function LegalPage() {
                             rel="noopener noreferrer"
                             className="text-[9px] font-black text-primary underline decoration-primary/30"
                         >
-                            Consulter l'EULA Apple
+                            {t("legal_page.apple_eula_link")}
                         </a>
                     </div>
                 </motion.div>

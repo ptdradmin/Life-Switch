@@ -23,6 +23,8 @@ const languages = [
   { code: "zh", label: "中文" },
   { code: "ja", label: "日本語" },
   { code: "ru", label: "Русский" },
+  { code: "nl", label: "Nederlands" },
+  { code: "tr", label: "Türkçe" },
 ];
 
 export default function LoginPage() {
@@ -137,7 +139,7 @@ export default function LoginPage() {
         </button>
       </motion.div>
 
-      <div className="w-full max-w-sm space-y-8 relative z-10">
+      <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg space-y-8 relative z-10">
         <motion.button
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
@@ -296,7 +298,7 @@ export default function LoginPage() {
                   </div>
                 ) : (
                   <div className="space-y-4 text-center">
-                    <p className="text-xs text-muted-foreground mb-2">Entrez le code envoyé au {phoneNumber}</p>
+                    <p className="text-xs text-muted-foreground mb-2">{t("auth.otp_sent_hint", { phone: phoneNumber })}</p>
                     <Input type="text" placeholder={t("auth.otp")} value={otp} onChange={(e) => setOtp(e.target.value)} className="h-14 rounded-2xl text-center text-2xl font-black tracking-[0.5em] bg-card/40 border-border/60" />
                     <Button type="submit" disabled={submitting} className="h-15 w-full rounded-[20px] text-lg font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                       {submitting ? "..." : t("auth.verify")}
@@ -348,7 +350,7 @@ export default function LoginPage() {
       </div>
 
       <Dialog open={langOpen} onOpenChange={setLangOpen}>
-        <DialogContent className="max-w-sm rounded-[32px] border-white/10 shadow-2xl backdrop-blur-xl bg-card/90">
+        <DialogContent className="max-w-[85vw] sm:max-w-sm rounded-[32px] border-white/10 shadow-2xl backdrop-blur-xl bg-card/90">
           <DialogHeader className="pb-4">
             <DialogTitle className="text-2xl font-black text-center tracking-tight">{t("profile.choose_lang")}</DialogTitle>
           </DialogHeader>
@@ -374,7 +376,7 @@ export default function LoginPage() {
 
       {/* Forgot Password Dialog */}
       <Dialog open={forgotOpen} onOpenChange={(v) => { setForgotOpen(v); if (!v) setForgotEmail(""); }}>
-        <DialogContent className="max-w-sm rounded-[32px] border-white/10 shadow-2xl backdrop-blur-xl bg-card/90">
+        <DialogContent className="max-w-[85vw] sm:max-w-sm rounded-[32px] border-white/10 shadow-2xl backdrop-blur-xl bg-card/90">
           <DialogHeader>
             <DialogTitle className="text-2xl font-black text-center tracking-tight">{t("login.forgot_password")}</DialogTitle>
           </DialogHeader>

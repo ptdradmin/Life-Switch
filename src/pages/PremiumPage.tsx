@@ -38,7 +38,7 @@ export default function PremiumPage() {
         const pkgToPurchase = selectedPackage || (offering?.availablePackages?.[0]) || { identifier: "web_premium" };
 
         if (!user) {
-            toast.error("Veuillez vous connecter pour continuer.");
+            toast.error(t("premium.login_required"));
             return;
         }
 
@@ -47,7 +47,7 @@ export default function PremiumPage() {
         // Simuler un achat réussi sur le Web ou si c'est le package de test
         if (!Capacitor.isNativePlatform() || (pkgToPurchase as any).identifier === "web_premium") {
             await new Promise(resolve => setTimeout(resolve, 1500)); // Simuler délai
-            toast.success("Mode Test : Bienvenue dans Life Switch Premium !");
+            toast.success(t("premium.test_success"));
             navigate("/settings");
             setLoading(false);
             return;
@@ -57,19 +57,19 @@ export default function PremiumPage() {
         setLoading(false);
 
         if (success) {
-            toast.success("Bienvenue dans Life Switch Premium !");
+            toast.success(t("premium.welcome"));
             navigate("/settings");
         } else {
-            toast.error("Le paiement n'a pas pu être complété.");
+            toast.error(t("premium.payment_failed"));
         }
     };
 
     const features = [
-        { icon: Infinity, label: "Stockage illimité", desc: "Protégez autant de secrets, codes et souvenirs que vous le souhaitez." },
-        { icon: Sparkles, label: "Messages Programmés (99 ans)", desc: "Envoyez des messages d'anniversaire à vos proches pendant des décennies." },
-        { icon: Video, label: "Vidéos HD & Time Capsules", desc: "Transmettez vos souvenirs en haute définition sans compression." },
-        { icon: Shield, label: "Protection Biométrique", desc: "Accès au coffre sécurisé par FaceID / Empreinte digitale." },
-        { icon: Headphones, label: "Support Prioritaire 24/7", desc: "Accès direct à notre équipe pour toute assistance." },
+        { icon: Infinity, label: t("premium.f1_title"), desc: t("premium.f1_desc") },
+        { icon: Sparkles, label: t("premium.f2_title"), desc: t("premium.f2_desc") },
+        { icon: Video, label: t("premium.f3_title"), desc: t("premium.f3_desc") },
+        { icon: Shield, label: t("premium.f4_title"), desc: t("premium.f4_desc") },
+        { icon: Headphones, label: t("premium.f5_title"), desc: t("premium.f5_desc") },
     ];
 
     if (profile?.is_premium) {
@@ -78,9 +78,9 @@ export default function PremiumPage() {
                 <div className="h-20 w-20 bg-primary/20 rounded-full flex items-center justify-center mb-6">
                     <Crown className="h-10 w-10 text-primary" />
                 </div>
-                <h1 className="text-3xl font-black mb-2">Vous êtes Premium</h1>
-                <p className="text-muted-foreground mb-8">Merci de votre confiance. Votre héritage est sous protection maximale.</p>
-                <Button onClick={() => navigate("/profile")} className="rounded-2xl px-8 h-12 font-black">Retour au profil</Button>
+                <h1 className="text-3xl font-black mb-2">{t("premium.already_premium")}</h1>
+                <p className="text-muted-foreground mb-8">{t("premium.already_premium_desc")}</p>
+                <Button onClick={() => navigate("/profile")} className="rounded-2xl px-8 h-12 font-black">{t("premium.back_profile")}</Button>
             </div>
         );
     }
@@ -93,7 +93,7 @@ export default function PremiumPage() {
                 <div className="absolute bottom-[-10%] left-[-10%] w-[300px] h-[300px] bg-primary/5 blur-[100px] rounded-full" />
             </div>
 
-            <div className="mx-auto max-w-md relative z-10">
+            <div className="mx-auto max-w-md sm:max-w-3xl lg:max-w-5xl relative z-10">
                 <button
                     onClick={() => navigate(-1)}
                     className="mb-8 flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
@@ -102,101 +102,107 @@ export default function PremiumPage() {
                     {t("common.back")}
                 </button>
 
-                <div className="text-center mb-10 space-y-4">
-                    <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="inline-flex h-16 w-16 items-center justify-center rounded-[24px] bg-gradient-to-br from-primary to-emerald-600 shadow-2xl shadow-primary/20 mb-2"
-                    >
-                        <Crown className="h-8 w-8 text-white" />
-                    </motion.div>
-                    <h1 className="text-4xl font-black tracking-tighter italic">PREMIUM</h1>
-                    <p className="text-muted-foreground font-medium max-w-[280px] mx-auto leading-tight">
-                        Élevez la sécurité de votre héritage au standard d'excellence.
-                    </p>
-                </div>
-
-                {/* Pricing Selection */}
-                <div className="space-y-4 mb-10">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-center mb-4">Choisir un plan</p>
-
-                    {offering?.availablePackages?.length ? (
-                        offering.availablePackages.map((pkg) => (
-                            <button
-                                key={pkg.identifier}
-                                onClick={() => setSelectedPackage(pkg)}
-                                className={cn(
-                                    "w-full p-5 rounded-[28px] border-2 transition-all flex items-center justify-between text-left relative overflow-hidden group",
-                                    selectedPackage?.identifier === pkg.identifier
-                                        ? "bg-primary/10 border-primary shadow-lg shadow-primary/10"
-                                        : "bg-card/40 border-white/5 hover:border-white/10"
-                                )}
-                            >
-                                <div className="space-y-1">
-                                    <p className="text-sm font-black uppercase tracking-widest opacity-60">
-                                        {pkg.product.title.split(' ')[0]}
-                                    </p>
-                                    <p className="text-xl font-black tracking-tight">{pkg.product.priceString}</p>
-                                </div>
-                                {selectedPackage?.identifier === pkg.identifier && (
-                                    <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center">
-                                        <Check className="h-3 w-3 text-white stroke-[4px]" />
-                                    </div>
-                                )}
-                            </button>
-                        ))
-                    ) : (
-                        /* Skeleton/Fallback for non-native or no offerings */
-                        <button
-                            onClick={() => setSelectedPackage({ identifier: "web_premium", product: { title: "Premium Mensuel", priceString: "4,99 €" } } as any)}
-                            className={cn(
-                                "w-full p-5 rounded-[28px] border-2 transition-all flex items-center justify-between text-left relative overflow-hidden group",
-                                selectedPackage?.identifier === "web_premium"
-                                    ? "bg-primary/10 border-primary shadow-lg shadow-primary/10"
-                                    : "bg-card/40 border-white/5 hover:border-white/10"
-                            )}
-                        >
-                            <div className="space-y-1">
-                                <p className="text-sm font-black uppercase tracking-widest opacity-60">Mensuel (Web Test)</p>
-                                <p className="text-xl font-black tracking-tight">4,99 € / mois</p>
-                            </div>
-                            <div className={cn(
-                                "h-6 w-6 rounded-full flex items-center justify-center transition-all",
-                                selectedPackage?.identifier === "web_premium" ? "bg-primary" : "bg-white/10"
-                            )}>
-                                <Check className={cn("h-3 w-3 text-white stroke-[4px]", selectedPackage?.identifier !== "web_premium" && "opacity-0")} />
-                            </div>
-                        </button>
-                    )}
-                </div>
-
-                {/* Features List */}
-                <div className="space-y-4 mb-12">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-center mb-6">Avantages exclusifs</p>
-                    <div className="space-y-6">
-                        {features.map((f, i) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+                    <div className="space-y-8">
+                        <div className="text-center md:text-left mb-10 space-y-4">
                             <motion.div
-                                key={i}
-                                initial={{ opacity: 0, x: -10 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.1 }}
-                                className="flex gap-4 items-start"
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                className="inline-flex h-16 w-16 items-center justify-center rounded-[24px] bg-gradient-to-br from-primary to-emerald-600 shadow-2xl shadow-primary/20 mb-2"
                             >
-                                <div className="h-10 w-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                                    <f.icon className="h-5 w-5" />
-                                </div>
-                                <div className="space-y-0.5">
-                                    <p className="text-sm font-black tracking-tight">{f.label}</p>
-                                    <p className="text-[11px] font-medium text-muted-foreground leading-tight">{f.desc}</p>
-                                </div>
+                                <Crown className="h-8 w-8 text-white" />
                             </motion.div>
-                        ))}
+                            <h1 className="text-4xl font-black tracking-tighter italic">{t("premium.title")}</h1>
+                            <p className="text-muted-foreground font-medium max-w-[280px] mx-auto md:mx-0 leading-tight">
+                                {t("premium.subtitle")}
+                            </p>
+                        </div>
+
+                        {/* Features List */}
+                        <div className="space-y-4">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-center md:text-left mb-6">{t("premium.exclusive_benefits")}</p>
+                            <div className="space-y-6">
+                                {features.map((f, i) => (
+                                    <motion.div
+                                        key={i}
+                                        initial={{ opacity: 0, x: -10 }}
+                                        whileInView={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.1 }}
+                                        className="flex gap-4 items-start"
+                                    >
+                                        <div className="h-10 w-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                                            <f.icon className="h-5 w-5" />
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <p className="text-sm font-black tracking-tight">{f.label}</p>
+                                            <p className="text-[11px] font-medium text-muted-foreground leading-tight">{f.desc}</p>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-8">
+                        {/* Pricing Selection */}
+                        <div className="space-y-4">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-center mb-4">{t("premium.choose_plan")}</p>
+
+                            {offering?.availablePackages?.length ? (
+                                offering.availablePackages.map((pkg) => (
+                                    <button
+                                        key={pkg.identifier}
+                                        onClick={() => setSelectedPackage(pkg)}
+                                        className={cn(
+                                            "w-full p-5 rounded-[28px] border-2 transition-all flex items-center justify-between text-left relative overflow-hidden group",
+                                            selectedPackage?.identifier === pkg.identifier
+                                                ? "bg-primary/10 border-primary shadow-lg shadow-primary/10"
+                                                : "bg-card/40 border-white/5 hover:border-white/10"
+                                        )}
+                                    >
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-black uppercase tracking-widest opacity-60">
+                                                {pkg.product.title.split(' ')[0]}
+                                            </p>
+                                            <p className="text-xl font-black tracking-tight">{pkg.product.priceString}</p>
+                                        </div>
+                                        {selectedPackage?.identifier === pkg.identifier && (
+                                            <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center">
+                                                <Check className="h-3 w-3 text-white stroke-[4px]" />
+                                            </div>
+                                        )}
+                                    </button>
+                                ))
+                            ) : (
+                                /* Skeleton/Fallback for non-native or no offerings */
+                                <button
+                                    onClick={() => setSelectedPackage({ identifier: "web_premium", product: { title: t("premium.monthly_test"), priceString: t("premium.price_monthly") } } as any)}
+                                    className={cn(
+                                        "w-full p-5 rounded-[28px] border-2 transition-all flex items-center justify-between text-left relative overflow-hidden group",
+                                        selectedPackage?.identifier === "web_premium"
+                                            ? "bg-primary/10 border-primary shadow-lg shadow-primary/10"
+                                            : "bg-card/40 border-white/5 hover:border-white/10"
+                                    )}
+                                >
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-black uppercase tracking-widest opacity-60">{t("premium.monthly_test")}</p>
+                                        <p className="text-xl font-black tracking-tight">{t("premium.price_monthly")}</p>
+                                    </div>
+                                    <div className={cn(
+                                        "h-6 w-6 rounded-full flex items-center justify-center transition-all",
+                                        selectedPackage?.identifier === "web_premium" ? "bg-primary" : "bg-white/10"
+                                    )}>
+                                        <Check className={cn("h-3 w-3 text-white stroke-[4px]", selectedPackage?.identifier !== "web_premium" && "opacity-0")} />
+                                    </div>
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 {/* Footer and Button */}
-                <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background via-background/95 to-transparent pt-12">
-                    <div className="mx-auto max-w-sm space-y-4">
+                <div className="md:relative fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t md:bg-none from-background via-background/95 to-transparent pt-12 md:pt-0">
+                    <div className="mx-auto max-w-sm md:max-w-none space-y-4">
                         <Button
                             onClick={handleSubscribe}
                             disabled={loading}
@@ -211,13 +217,13 @@ export default function PremiumPage() {
                                         animate={{ opacity: 1, scale: 1 }}
                                         className="flex items-center gap-3"
                                     >
-                                        Passer au Premium <Gem className="h-5 w-5 group-hover:rotate-12 transition-transform" />
+                                        {t("premium.cta")} <Gem className="h-5 w-5 group-hover:rotate-12 transition-transform" />
                                     </motion.span>
                                 )}
                             </AnimatePresence>
                         </Button>
                         <p className="text-[10px] text-center text-muted-foreground/60 leading-tight">
-                            Abonnement sans engagement. Résiliable à tout moment depuis les réglages de votre compte store.
+                            {t("premium.footer")}
                         </p>
                     </div>
                 </div>

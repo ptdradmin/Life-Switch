@@ -10,7 +10,7 @@ export default function BottomNav() {
   const { t } = useTranslation();
 
   const tabs = [
-    { path: "/", label: "Chronos", icon: Clock },
+    { path: "/", label: t("nav.chronos"), icon: Clock },
     { path: "/library", label: t("library.title"), icon: Book },
     { path: "/vault", label: t("nav.vault"), icon: Lock },
     { path: "/contacts", label: t("nav.contacts"), icon: Users },
@@ -22,7 +22,7 @@ export default function BottomNav() {
       <motion.div
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="mx-auto flex max-w-[440px] h-18 bg-card/85 backdrop-blur-2xl rounded-[32px] border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.15)] overflow-hidden pointer-events-auto"
+        className="mx-auto flex w-full max-w-[440px] md:max-w-lg lg:max-w-xl h-18 bg-card/85 backdrop-blur-2xl rounded-[32px] border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.15)] overflow-hidden pointer-events-auto"
       >
         {tabs.map(({ path, label, icon: Icon }) => {
           const active = location.pathname === path;

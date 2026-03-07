@@ -85,7 +85,7 @@ export default function LibraryPage() {
                 <div className="absolute bottom-[20%] -right-[10%] h-[350px] w-[350px] rounded-full bg-primary/5 blur-[100px]" />
             </div>
 
-            <div className="mx-auto max-w-sm px-6 relative z-10 space-y-10">
+            <div className="mx-auto max-w-sm sm:max-w-2xl lg:max-w-6xl px-6 relative z-10 space-y-10">
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -100,7 +100,7 @@ export default function LibraryPage() {
                     </div>
                 </motion.div>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {items.map((item, idx) => (
                         <motion.button
                             key={item.id}

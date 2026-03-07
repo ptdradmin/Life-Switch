@@ -41,11 +41,11 @@ export default function HomePage() {
   const encryptionKey = (user?.uid || "fallback-key") + AES_SALT;
 
   const moods = [
-    { emoji: "😊", label: "Happy" },
-    { emoji: "😌", label: "Peaceful" },
-    { emoji: "🤔", label: "Reflective" },
-    { emoji: "😔", label: "Melancholic" },
-    { emoji: "✨", label: "Inspired" },
+    { emoji: "😊", label: t("home.mood_happy") },
+    { emoji: "😌", label: t("home.mood_peaceful") },
+    { emoji: "🤔", label: t("home.mood_reflective") },
+    { emoji: "😔", label: t("home.mood_melancholic") },
+    { emoji: "✨", label: t("home.mood_inspired") },
   ];
 
   // Security Score Calculation
@@ -113,7 +113,7 @@ export default function HomePage() {
         setDiaryText(prompt + "\n\n");
       }
     } catch {
-      setCarnetReply("Je suis là avec toi. Dis-moi ce que tu ressens... ✨");
+      setCarnetReply(t("carnet.fallback_reply"));
     }
     setCarnetLoading(false);
   }, [diaryText, selectedMood, lang, profile, secretsCount, contactsCount, user]);
@@ -147,7 +147,7 @@ export default function HomePage() {
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
       console.error("Chat error:", errMsg);
-      setChatMessages(prev => [...prev, { role: "carnet" as const, text: `⚠️ API Error: ${errMsg}` }]);
+      setChatMessages(prev => [...prev, { role: "carnet" as const, text: t("carnet.api_error", { error: errMsg }) }]);
     }
     setCarnetLoading(false);
   }, [chatInput, chatMessages, carnetLoading, selectedMood, profile, secretsCount, contactsCount, user, lang, t]);
@@ -189,7 +189,7 @@ export default function HomePage() {
       const encryptedContent = CryptoJS.AES.encrypt(diaryText.trim(), encryptionKey).toString();
       await addDoc(collection(db, "secrets"), {
         user_id: user.uid,
-        title: `Pensée ${selectedMood || ""} du ${new Date().toLocaleDateString()}`,
+        title: t("diary.thought_title", { mood: selectedMood || "", date: new Date().toLocaleDateString() }),
         content: encryptedContent,
         category: "message",
         created_at: serverTimestamp(),
@@ -203,7 +203,7 @@ export default function HomePage() {
       setDiaryOpen(false);
     } catch (e) {
       console.error("Diary save error:", e);
-      toast.error("Erreur lors de la sauvegarde.");
+      toast.error(t("diary.save_error"));
     }
     setSavingDiary(false);
   };
@@ -221,26 +221,26 @@ export default function HomePage() {
     setSavingDiary(true);
     try {
       const sessionText = chatMessages.map(m =>
-        `${m.role === 'user' ? 'Utilisateur' : 'Carnet'}: ${m.text}`
+        `${m.role === 'user' ? t("carnet.user_label") : t("carnet.bot_label")}: ${m.text}`
       ).join('\n\n');
 
       const encryptedContent = CryptoJS.AES.encrypt(sessionText, encryptionKey).toString();
       await addDoc(collection(db, "secrets"), {
         user_id: user.uid,
-        title: `Échange avec Carnet - ${new Date().toLocaleDateString()}`,
+        title: t("carnet.session_title", { date: new Date().toLocaleDateString() }),
         content: encryptedContent,
         category: "message",
         created_at: serverTimestamp(),
         is_encrypted: true,
         mood: selectedMood || "🤖"
       });
-      toast.success("Conversation sauvegardée dans votre coffre-fort 🔐");
+      toast.success(t("carnet.session_saved"));
       setChatMessages([]);
       setShowSaveConfirm(false);
       setDiaryOpen(false);
     } catch (e) {
       console.error("Carnet session save error:", e);
-      toast.error("Erreur de sauvegarde.");
+      toast.error(t("carnet.save_error"));
     }
     setSavingDiary(false);
   };
@@ -251,32 +251,32 @@ export default function HomePage() {
     try {
       const { score } = getSecurityScore();
       const stats = getStats();
-      const report = `📊 RAPPORT D'ÉTAT LIFE SWITCH
-Date: ${new Date().toLocaleString()}
+      const report = `${t("carnet.report_title")}
+${t("carnet.report_date", { date: new Date().toLocaleString() })}
 
-🛡️ SÉCURITÉ
-- Score Global: ${score}/100
-- Profil: ${profile?.photo_url ? "Complet" : "Incomplet"}
-- Identité: ${profile?.display_name || "Non définie"}
+${t("carnet.report_security")}
+${t("carnet.report_score", { score })}
+${t("carnet.report_profile", { status: profile?.photo_url ? t("carnet.profile_complete") : t("carnet.profile_incomplete") })}
+${t("carnet.report_identity", { name: profile?.display_name || t("carnet.neutral") })}
 
-⏱️ PROTOCOLE DE VIE
-- Minuteur: ${profile?.timer_days} jours
-- État: ${stats.total - stats.elapsed} jours restants avant alerte
-- Dernier signe de vie: ${profile?.last_check_in ? new Date(profile.last_check_in).toLocaleString() : "Jamais"}
+${t("carnet.report_protocol")}
+${t("carnet.report_timer", { days: profile?.timer_days })}
+${t("carnet.report_status", { days: total - elapsed })}
+${t("carnet.report_last_sign", { date: profile?.last_check_in ? new Date(profile.last_check_in).toLocaleString() : t("carnet.never") })}
 
-🔐 COFFRE-FORT & RÉSEAU
-- Secrets protégés: ${secretsCount}
-- Proches désignés: ${contactsCount}
+${t("carnet.report_vault")}
+${t("carnet.report_secrets", { count: secretsCount })}
+${t("carnet.report_contacts", { count: contactsCount })}
 
-✨ HUMEUR
-- Ressenti: ${selectedMood || "Neutre"}
+${t("carnet.report_mood_title")}
+${t("carnet.report_mood_value", { mood: selectedMood || t("carnet.neutral") })}
 
-Rapport généré et chiffré par Carnet.`;
+${t("carnet.report_footer")}`;
 
       const encryptedContent = CryptoJS.AES.encrypt(report, encryptionKey).toString();
       await addDoc(collection(db, "secrets"), {
         user_id: user.uid,
-        title: `Rapport Carnet ${new Date().toLocaleDateString()}`,
+        title: `${t("carnet.report_prefix")} ${new Date().toLocaleDateString()}`,
         content: encryptedContent,
         category: "doc",
         created_at: serverTimestamp(),
@@ -305,7 +305,7 @@ Rapport généré et chiffré par Carnet.`;
         <div className="absolute bottom-[10%] right-[-20%] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px]" />
       </div>
 
-      <div className="w-full max-w-sm relative z-10 flex flex-col gap-8">
+      <div className="w-full max-w-sm sm:max-w-2xl lg:max-w-6xl relative z-10 flex flex-col gap-10">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -314,11 +314,11 @@ Rapport généré et chiffré par Carnet.`;
         >
           <div className="flex flex-col gap-1">
             <h2 className="text-2xl font-black text-foreground tracking-tight leading-none">
-              Salut, {profile?.display_name?.split(" ")[0] || "Explorateur"} 👋
+              {t("home.greeting", { name: profile?.display_name?.split(" ")[0] || t("home.explorer") })}
             </h2>
             <div className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{t("home.system_active") || "PROTOCOLE ACTIF"}</p>
+              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{t("home.system_active")}</p>
             </div>
           </div>
           <motion.div
@@ -329,159 +329,195 @@ Rapport généré et chiffré par Carnet.`;
           </motion.div>
         </motion.div>
 
-        {/* Status Grid */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 gap-4"
-        >
-          <div className="rounded-[28px] bg-card/40 backdrop-blur-xl p-5 border border-white/10 shadow-xl flex flex-col gap-4 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform">
-              <Heart className="h-5 w-5 fill-emerald-500/10" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+          {/* Heart Status Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+            className="rounded-[32px] bg-card/40 backdrop-blur-xl p-8 border border-white/10 shadow-xl flex flex-col justify-between gap-6 group hover:border-primary/20 transition-all"
+          >
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform shadow-lg shadow-emerald-500/5">
+              <Heart className="h-7 w-7 fill-emerald-500/10" />
             </div>
             <div>
-              <p className="text-lg font-black tracking-tight">{lastCheckDate}</p>
-              <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60 mt-0.5">{t("home.last_life")}</p>
+              <p className="text-3xl font-black tracking-tight mb-1">{lastCheckDate}</p>
+              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60 italic">{t("home.last_life")}</p>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="rounded-[28px] bg-card/40 backdrop-blur-xl p-5 border border-white/10 shadow-xl flex flex-col gap-4 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
-              <Lock className="h-5 w-5" />
+          {/* Secrets Status Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.15 }}
+            className="rounded-[32px] bg-card/40 backdrop-blur-xl p-8 border border-white/10 shadow-xl flex flex-col justify-between gap-6 group hover:border-primary/20 transition-all"
+          >
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary group-hover:scale-110 transition-transform shadow-lg shadow-primary/5">
+              <Lock className="h-7 w-7" />
             </div>
             <div>
-              <p className="text-lg font-black tracking-tight">{secretsCount}</p>
-              <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60 mt-0.5">{t("home.secrets_prot")}</p>
+              <p className="text-3xl font-black tracking-tight mb-1">{secretsCount}</p>
+              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60 italic">{t("home.secrets_prot")}</p>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Security Health Score */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="rounded-[32px] bg-card/40 backdrop-blur-xl p-6 border border-white/10 shadow-2xl relative overflow-hidden"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                <ShieldCheck className="h-5 w-5 text-amber-500" />
+          {/* Progress Timeline Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="rounded-[32px] bg-secondary/30 backdrop-blur-md p-8 border border-white/5 shadow-2xl relative overflow-hidden group flex flex-col justify-center lg:col-span-1 md:col-span-2"
+          >
+            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
+              <Activity className="h-20 w-20 text-primary" />
+            </div>
+
+            <div className="flex items-end justify-between mb-6">
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">{t("home.presence_window")}</p>
+                <p className="text-sm font-bold text-foreground opacity-90 leading-tight">
+                  {t("home.pulse_required")} <br /><span className="text-primary font-black text-lg">{total - elapsed} {t("profile.days_suffix")}</span>
+                </p>
               </div>
-              <div>
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">{t("home.security_score")}</p>
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  <p className="text-lg font-black tracking-tighter leading-none italic uppercase">{score === 100 ? "OPTIMAL" : "CRITIQUE"}</p>
+              <div className="flex flex-col items-end">
+                <span className="text-3xl font-black text-primary tracking-tighter leading-none italic">{pct}%</span>
+                <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">{t("home.security_badge")}</span>
+              </div>
+            </div>
+
+            <div className="relative h-4 w-full bg-secondary/50 rounded-full overflow-hidden border border-white/5 shadow-inner">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+                className={cn(
+                  "h-full rounded-full transition-all duration-1000 relative",
+                  pct > 20 ? "bg-primary shadow-[0_0_15px_rgba(var(--primary),0.6)]" : "bg-destructive shadow-[0_0_15px_rgba(var(--destructive),0.6)]"
+                )}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 skew-x-12 animate-[shimmer_2s_infinite]" />
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          {/* Security Health Score Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="rounded-[40px] bg-card/60 backdrop-blur-2xl p-8 border border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] relative overflow-hidden h-full group"
+          >
+            <div className="absolute -top-24 -right-24 h-64 w-64 bg-amber-500/5 rounded-full blur-[80px]" />
+
+            <div className="flex items-center justify-between mb-10">
+              <div className="flex items-center gap-5">
+                <div className="h-16 w-16 rounded-[22px] bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-xl shadow-amber-500/5">
+                  <ShieldCheck className="h-8 w-8 text-amber-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] leading-none mb-2">{t("home.security_score")}</p>
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                    <p className="text-3xl font-black tracking-tighter leading-none italic uppercase">
+                      {score >= 90 ? t("home.optimal") : score >= 60 ? t("home.stable") : t("home.critical")}
+                    </p>
+                  </div>
                 </div>
               </div>
+              <div className="text-5xl font-black text-amber-500 italic tracking-tighter ml-auto drop-shadow-2xl">{score}%</div>
             </div>
-            {profile?.is_premium && (
-              <div className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 border border-primary/20">
-                <Crown className="h-3 w-3 text-primary" />
-                <span className="text-[8px] font-black text-primary uppercase italic">PRO</span>
-              </div>
-            )}
-            <div className="text-3xl font-black text-amber-500 italic tracking-tighter ml-auto">{score}%</div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { label: "Profile", ok: checks.profile, icon: Zap, path: "/settings" },
-              { label: "Secrets", ok: checks.secrets, icon: Lock, path: "/vault" },
-              { label: "Contacts", ok: checks.contacts, icon: Users, path: "/contacts" },
-              { label: "Timer", ok: checks.timer, icon: Clock, path: "/settings" },
-            ].map((c, i) => (
-              <button key={i} onClick={() => navigate(c.path)} className={cn("flex items-center gap-2 px-3 py-2 rounded-xl border transition-all active:scale-95 text-left", c.ok ? "bg-amber-500/5 border-amber-500/20 text-amber-500" : "bg-muted/30 border-white/5 opacity-40 hover:opacity-60")}>
-                <c.icon className="h-3 w-3 shrink-0" />
-                <span className="text-[9px] font-black uppercase tracking-widest">{c.label}</span>
-                {c.ok && <CheckCircle className="ml-auto h-3 w-3" />}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Progress Timeline */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="rounded-[32px] bg-secondary/30 backdrop-blur-md p-6 border border-white/5 shadow-2xl relative overflow-hidden group"
-        >
-          <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
-            <Activity className="h-16 w-16 text-primary" />
-          </div>
-
-          <div className="flex items-end justify-between mb-5">
-            <div className="flex flex-col gap-1">
-              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{t("home.presence_window") || "FENÊTRE DE PRÉSENCE"}</p>
-              <p className="text-[11px] font-bold text-foreground opacity-80">
-                Pulse requis d'ici <span className="text-primary font-black">{total - elapsed} {t("profile.days_suffix")}</span>
-              </p>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { labelKey: "home.sec_profile_title", ok: checks.profile, icon: Zap, path: "/settings", desc: t("home.sec_profile_desc") },
+                { labelKey: "home.sec_secrets_title", ok: checks.secrets, icon: Lock, path: "/vault", desc: t("home.sec_secrets_desc") },
+                { labelKey: "home.sec_contacts_title", ok: checks.contacts, icon: Users, path: "/contacts", desc: t("home.sec_contacts_desc") },
+                { labelKey: "home.sec_timer_title", ok: checks.timer, icon: Clock, path: "/settings", desc: t("home.sec_timer_desc") },
+              ].map((c, i) => (
+                <button
+                  key={i}
+                  onClick={() => navigate(c.path)}
+                  className={cn(
+                    "flex flex-col gap-3 p-5 rounded-[24px] border transition-all active:scale-[0.98] text-left relative overflow-hidden group/btn",
+                    c.ok
+                      ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-500"
+                      : "bg-muted/20 border-white/5 opacity-50 hover:opacity-100 hover:bg-card/40"
+                  )}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <c.icon className={cn("h-5 w-5", c.ok ? "text-emerald-500" : "text-muted-foreground")} />
+                    {c.ok && <CheckCircle className="h-4 w-4" />}
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-black uppercase tracking-widest block">{t(c.labelKey)}</span>
+                    <span className="text-[9px] font-medium opacity-60 tracking-tight">{c.desc}</span>
+                  </div>
+                </button>
+              ))}
             </div>
-            <div className="flex flex-col items-end">
-              <span className="text-2xl font-black text-primary tracking-tighter leading-none">{pct}%</span>
-              <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">SÉCURITÉ</span>
-            </div>
-          </div>
+          </motion.div>
 
-          <div className="relative h-4 w-full bg-secondary/50 rounded-full overflow-hidden border border-white/5 shadow-inner">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${pct}%` }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
-              className={cn(
-                "h-full rounded-full transition-all duration-1000 relative",
-                pct > 20 ? "bg-primary shadow-[0_0_15px_rgba(var(--primary),0.6)]" : "bg-destructive shadow-[0_0_15px_rgba(var(--destructive),0.6)]"
-              )}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 skew-x-12 animate-[shimmer_2s_infinite]" />
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Pulse Interactive Area */}
-        <div className="mt-4 flex flex-col items-center justify-center relative py-10">
-          <AnimatePresence>
-            <motion.div
-              animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.1, 0.2, 0.1]
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="absolute h-72 w-72 bg-primary/20 rounded-full blur-[60px] pointer-events-none"
-            />
-          </AnimatePresence>
-
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.92 }}
-            onClick={handlePulse}
-            className="group relative flex h-60 w-60 items-center justify-center rounded-full touch-manipulation z-20"
+          {/* Pulse Interactive Area */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-col items-center justify-center relative py-12 bg-card/20 rounded-[40px] border border-white/5 backdrop-blur-sm self-stretch"
           >
-            <div className="absolute inset-0 animate-ping rounded-full bg-primary/10 opacity-30 duration-[3000ms]" />
-            <div className="absolute inset-4 rounded-full border border-primary/20 animate-[spin_10s_linear_infinite] border-dashed" />
-            <div className="absolute inset-8 rounded-full border border-primary/10 animate-[spin_15s_linear_infinite_reverse]" />
-
-            <div className="relative z-10 flex h-44 w-44 flex-col items-center justify-center rounded-full bg-primary shadow-[0_20px_60px_rgba(var(--primary),0.5)] border-4 border-white/20 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/20" />
+            <AnimatePresence>
               <motion.div
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="relative flex flex-col items-center"
-              >
-                <Zap className="h-12 w-12 text-primary-foreground mb-2 fill-primary-foreground/20" />
-                <span className="text-2xl font-black text-primary-foreground tracking-tighter uppercase">{t("home.pulse_btn") || "PULSE"}</span>
-              </motion.div>
-
-              <motion.div
-                animate={{ opacity: [0.3, 0.6, 0.3] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute inset-[-100%] bg-white/10 blur-2xl"
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.1, 0.25, 0.1]
+                }}
+                transition={{ duration: 4, repeat: Infinity }}
+                className="absolute h-80 w-80 bg-primary/20 rounded-full blur-[80px] pointer-events-none"
               />
+            </AnimatePresence>
+
+            <div className="text-center mb-8 relative z-10">
+              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em] mb-1">{t("home.confirm_presence")}</p>
+              <h3 className="text-xl font-black tracking-tighter italic uppercase text-foreground/80">{t("home.vitality_active")}</h3>
             </div>
-          </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.92 }}
+              onClick={handlePulse}
+              className="group relative flex h-64 w-64 items-center justify-center rounded-full touch-manipulation z-20"
+            >
+              <div className="absolute inset-0 animate-ping rounded-full bg-primary/10 opacity-30 duration-[3000ms]" />
+              <div className="absolute inset-4 rounded-full border border-primary/30 animate-[spin_10s_linear_infinite] border-dashed" />
+              <div className="absolute inset-8 rounded-full border border-primary/20 animate-[spin_15s_linear_infinite_reverse]" />
+              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary/20 to-transparent blur-3xl opacity-0 group-hover:opacity-40 transition-opacity" />
+
+              <div className="relative z-10 flex h-48 w-48 flex-col items-center justify-center rounded-full bg-primary shadow-[0_25px_80px_-10px_rgba(var(--primary),0.6)] border-4 border-white/20 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-tr from-black/30 via-transparent to-white/30" />
+                <motion.div
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  className="relative flex flex-col items-center"
+                >
+                  <Zap className="h-14 w-14 text-primary-foreground mb-3 fill-primary-foreground/20" />
+                  <span className="text-3xl font-black text-primary-foreground tracking-tighter italic uppercase">{t("home.pulse_btn")}</span>
+                </motion.div>
+
+                <motion.div
+                  animate={{ opacity: [0.4, 0.8, 0.4] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute inset-[-150%] bg-white/10 blur-3xl"
+                />
+              </div>
+            </motion.button>
+
+            <div className="mt-8 flex items-center gap-3 text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">
+              <Activity className="h-3 w-3" />
+              {t("home.pulse_valid")}
+            </div>
+          </motion.div>
         </div>
       </div>
 
@@ -498,7 +534,7 @@ Rapport généré et chiffré par Carnet.`;
 
       {/* Dialog with 2 tabs */}
       <Dialog open={diaryOpen} onOpenChange={(o) => { if (!o) { if (chatMessages.length > 0) { setShowSaveConfirm(true); } else { setDiaryOpen(false); setActiveTab("journal"); } } else { setDiaryOpen(true); } }}>
-        <DialogContent className="max-w-[92vw] w-full rounded-[40px] p-0 overflow-hidden border-none shadow-2xl bg-background">
+        <DialogContent className="max-w-[92vw] sm:max-w-2xl w-full rounded-[40px] p-0 overflow-hidden border-none shadow-2xl bg-background">
           <BiometricGuard>
             <DialogTitle className="sr-only">Journal &amp; Carnet</DialogTitle>
 
@@ -525,7 +561,7 @@ Rapport généré et chiffré par Carnet.`;
                 )}
               >
                 <Bot className="h-3.5 w-3.5" />
-                Carnet ✨
+                {t("carnet.title_nav")}
               </button>
             </div>
 
@@ -606,22 +642,22 @@ Rapport généré et chiffré par Carnet.`;
                         <div className="h-20 w-20 rounded-3xl bg-primary/10 flex items-center justify-center mb-6">
                           <Save className="h-10 w-10 text-primary" />
                         </div>
-                        <h3 className="text-xl font-black uppercase tracking-tighter italic mb-2">Sauvegarder l'échange ?</h3>
-                        <p className="text-sm font-medium text-muted-foreground mb-8">Voulez-vous enregistrer cette conversation dans votre coffre-fort chiffré ?</p>
+                        <h3 className="text-xl font-black uppercase tracking-tighter italic mb-2">{t("carnet.save_confirm_title")}</h3>
+                        <p className="text-sm font-medium text-muted-foreground mb-8">{t("carnet.save_confirm_desc")}</p>
 
                         <div className="w-full space-y-3">
                           <Button
                             onClick={() => saveCarnetSession(true)}
                             className="w-full h-14 rounded-2xl font-black uppercase italic tracking-widest gap-2"
                           >
-                            <CheckCircle className="h-5 w-5" /> Oui, sécuriser
+                            <CheckCircle className="h-5 w-5" /> {t("carnet.save_confirm_yes")}
                           </Button>
                           <Button
                             variant="ghost"
                             onClick={() => saveCarnetSession(false)}
                             className="w-full h-14 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] text-muted-foreground"
                           >
-                            Non, supprimer
+                            {t("carnet.save_confirm_no")}
                           </Button>
                         </div>
                       </motion.div>
@@ -633,8 +669,8 @@ Rapport généré et chiffré par Carnet.`;
                       <Bot className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-black">Carnet</p>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">Compagnon IA</p>
+                      <p className="text-sm font-black">{t("carnet.title_nav")}</p>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">{t("carnet.companion")}</p>
                     </div>
                     <div className="ml-auto">
                       {chatMessages.length > 0 && (
@@ -642,7 +678,7 @@ Rapport généré et chiffré par Carnet.`;
                           onClick={() => setShowSaveConfirm(true)}
                           className="h-8 px-3 rounded-xl bg-primary/10 text-primary text-[9px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-primary/20 transition-colors"
                         >
-                          <XCircle className="h-3 w-3" /> Terminer
+                          <XCircle className="h-3 w-3" /> {t("carnet.finish")}
                         </button>
                       )}
                     </div>

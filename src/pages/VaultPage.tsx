@@ -283,7 +283,7 @@ export default function VaultPage() {
           <div className="absolute bottom-[10%] left-0 w-72 h-72 bg-primary/5 rounded-full blur-[80px]" />
         </div>
 
-        <div className="mx-auto max-w-sm px-6 relative z-10 space-y-8">
+        <div className="mx-auto max-w-sm sm:max-w-2xl lg:max-w-5xl px-6 relative z-10 space-y-8">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -320,7 +320,7 @@ export default function VaultPage() {
                 <p className="text-sm font-medium text-muted-foreground/60">{t("vault.empty")}</p>
               </motion.div>
             ) : (
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {secrets.map((s, idx) => (
                   <motion.div
                     layout
@@ -370,7 +370,7 @@ export default function VaultPage() {
 
         {/* New Secret Dialog */}
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="max-w-[90vw] w-full rounded-[40px] px-6 py-8 border-white/10 bg-card/90 backdrop-blur-2xl">
+          <DialogContent className="max-w-[90vw] sm:max-w-xl w-full rounded-[40px] px-6 py-8 border-white/10 bg-card/90 backdrop-blur-2xl">
             <DialogHeader className="pb-4">
               <DialogTitle className="text-2xl font-black text-center">{t("vault.new_secret")}</DialogTitle>
             </DialogHeader>
@@ -380,7 +380,7 @@ export default function VaultPage() {
                 {(["code", "message", "doc", "media"] as const).map((cat) => (
                   <button key={cat} onClick={() => setCategory(cat)} className={cn("flex flex-col items-center justify-center gap-2 h-16 rounded-2xl border transition-all", category === cat ? "bg-primary text-primary-foreground" : "bg-secondary/40 border-none text-muted-foreground")}>
                     {cat === "code" ? <Lock className="h-4 w-4" /> : cat === "message" ? <Heart className="h-4 w-4" /> : cat === "doc" ? <FileText className="h-4 w-4" /> : <ImageIcon className="h-4 w-4" />}
-                    <span className="text-[8px] font-black uppercase tracking-widest">{cat}</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest">{t("vault.cat_" + cat)}</span>
                   </button>
                 ))}
               </div>

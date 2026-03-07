@@ -34,6 +34,7 @@ const languages = [
     { code: "zh", label: "中文", flag: "🇨🇳" },
     { code: "ja", label: "日本語", flag: "🇯🇵" },
     { code: "ru", label: "Русский", flag: "🇷🇺" },
+    { code: "tr", label: "Türkçe", flag: "🇹🇷" },
 ];
 
 type Theme = "dark" | "light" | "system";
@@ -181,7 +182,7 @@ export default function SettingsPage() {
         await new Promise(r => setTimeout(r, 2000));
         setTestingProtocol(false);
         toast.success(t("settings.test_success"), {
-            description: "Simulation complétée sans erreur.",
+            description: t("settings.test_success_desc"),
             icon: <ShieldCheck className="h-5 w-5 text-emerald-500" />
         });
     };
@@ -287,7 +288,7 @@ export default function SettingsPage() {
                 <div className="absolute bottom-0 left-[-10%] w-[350px] h-[350px] bg-primary/5 rounded-full blur-[80px]" />
             </div>
 
-            <div className="mx-auto max-w-sm relative z-10 space-y-10">
+            <div className="mx-auto max-w-sm sm:max-w-2xl lg:max-w-5xl relative z-10 space-y-10">
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-2">
                     <h1 className="text-3xl font-black tracking-tight">{t("settings.title")}</h1>
                     <div className="h-1 w-12 bg-primary rounded-full" />
@@ -342,8 +343,8 @@ export default function SettingsPage() {
                         </div>
                         <div className="relative z-10 flex items-center justify-between">
                             <div className="space-y-1">
-                                <h3 className="text-xl font-black text-white tracking-tight italic">DEVENIR PREMIUM</h3>
-                                <p className="text-[11px] font-bold text-white/80 uppercase tracking-widest">Stockage illimité & Sécurité HD</p>
+                                <h3 className="text-xl font-black text-white tracking-tight italic">{t("settings.become_premium")}</h3>
+                                <p className="text-[11px] font-bold text-white/80 uppercase tracking-widest">{t("settings.unlimited_storage_desc")}</p>
                             </div>
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/20">
                                 <ArrowRight className="h-5 w-5 text-white" />
@@ -352,217 +353,225 @@ export default function SettingsPage() {
                     </motion.button>
                 )}
 
-                <div className="space-y-8">
-                    <Section label={t("settings.account")} idx={0}>
-                        <Row icon={CalendarDays} label={t("profile.member_since")} right={<span className="text-[13px] font-black text-muted-foreground/80">{createdDate}</span>} />
-                        <Row icon={Lock} label={t("profile.secrets_count")} right={<span className="text-sm font-black text-primary bg-primary/10 px-3 py-1 rounded-full">{secretsCount}</span>} />
-                        {profile?.is_premium && (
-                            <Row icon={Crown} label="Life Switch Premium" right={<span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 italic">VIP ACTIVE</span>} />
-                        )}
-                        <Row icon={FileText} label={t("settings.export_data")} onClick={handleExportData} right={exporting ? <div className="h-3 w-3 animate-spin rounded-full border border-primary border-t-transparent" /> : null} />
-                        <Row icon={ShieldCheck} label={t("settings.security")} right={<span className="text-[10px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-lg">SECURE ✓</span>} />
-                        <div className="flex items-center justify-between px-5 py-4">
-                            <div className="flex items-center gap-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary"><Fingerprint className="h-5 w-5" /></div>
-                                <div className="flex flex-col">
-                                    <span className="text-[15px] font-bold tracking-tight">{t("settings.biometric")}</span>
-                                    <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-tighter">{t("settings.biometric_desc")}</span>
-                                </div>
-                            </div>
-                            <Toggle enabled={biometricEnabled} onChange={handleBiometricToggle} />
-                        </div>
-                    </Section>
-
-                    <Section label={t("settings.notifications")} idx={1}>
-                        <div className="flex items-center justify-between px-5 py-5">
-                            <div className="flex items-center gap-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                                    {notifEnabled ? <Bell className="h-5 w-5" /> : <BellOff className="h-5 w-5 opacity-40" />}
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[15px] font-bold tracking-tight">{t("settings.push_notifications")}</span>
-                                    <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-tighter">{notifEnabled ? t("common.on") : t("common.off")}</span>
-                                </div>
-                            </div>
-                            <Toggle enabled={notifEnabled} onChange={handleNotifToggle} />
-                        </div>
-                        {notifEnabled && (
-                            <div className="px-5 pb-5 pt-0">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={testNotification}
-                                    className="w-full h-10 rounded-xl bg-primary/5 border-primary/20 text-primary font-black uppercase tracking-widest text-[10px] gap-2 active:scale-95 transition-all"
-                                >
-                                    <Bell className="h-3 w-3" />
-                                    {t("settings.test_notif")} 🔔
-                                </Button>
-                            </div>
-                        )}
-                    </Section>
-
-                    <Section label={t("profile.timer_settings")} idx={2}>
-                        <div className="px-5 py-5 space-y-4">
-                            <div className="flex items-center gap-3">
-                                <Timer className="h-4 w-4 text-primary" />
-                                <span className="text-[13px] font-black text-muted-foreground uppercase tracking-widest">{t("profile.timer_desc")}</span>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                {timerOptions.map((d) => (
-                                    <button
-                                        key={d}
-                                        onClick={() => handleTimerChange(d)}
-                                        className={cn("flex-1 min-w-[60px] rounded-2xl py-3 text-xs font-black border", (profile?.timer_days ?? 30) === d ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/40 text-muted-foreground border-white/5")}
-                                    >
-                                        {d}{t("profile.days_suffix")}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </Section>
-
-                    <Section label={t("settings.appearance")} idx={3}>
-                        <Row icon={Languages} label={t("profile.language")} onClick={() => setLangOpen(true)} right={<span className="text-xs font-black uppercase text-muted-foreground">{currentLang.label}</span>} />
-
-                        {/* Accent Color Picker */}
-                        <div className="px-5 py-5 space-y-4 border-t border-border/30">
-                            <div className="flex items-center justify-between">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-8">
+                        <Section label={t("settings.account")} idx={0}>
+                            <Row icon={CalendarDays} label={t("profile.member_since")} right={<span className="text-[13px] font-black text-muted-foreground/80">{createdDate}</span>} />
+                            <Row icon={Lock} label={t("profile.secrets_count")} right={<span className="text-sm font-black text-primary bg-primary/10 px-3 py-1 rounded-full">{secretsCount}</span>} />
+                            {profile?.is_premium && (
+                                <Row icon={Crown} label="Life Switch Premium" right={<span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 italic">{t("settings.vip_active")}</span>} />
+                            )}
+                            <Row icon={FileText} label={t("settings.export_data")} onClick={handleExportData} right={exporting ? <div className="h-3 w-3 animate-spin rounded-full border border-primary border-t-transparent" /> : null} />
+                            <Row icon={ShieldCheck} label={t("settings.security")} right={<span className="text-[10px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-lg">{t("common.secure")}</span>} />
+                            <div className="flex items-center justify-between px-5 py-4">
                                 <div className="flex items-center gap-4">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary"><Palette className="h-5 w-5" /></div>
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary"><Fingerprint className="h-5 w-5" /></div>
                                     <div className="flex flex-col">
-                                        <span className="text-[15px] font-bold tracking-tight">{t("settings.accent_color")}</span>
-                                        {!profile?.is_premium && <span className="text-[9px] font-black text-amber-500 uppercase">{t("settings.premium_only")}</span>}
+                                        <span className="text-[15px] font-bold tracking-tight">{t("settings.biometric")}</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-tighter">{t("settings.biometric_desc")}</span>
                                     </div>
                                 </div>
-                                <div className="flex gap-2">
-                                    {accentColors.map((c) => (
+                                <Toggle enabled={biometricEnabled} onChange={handleBiometricToggle} />
+                            </div>
+                        </Section>
+
+                        <Section label={t("settings.notifications")} idx={1}>
+                            <div className="flex items-center justify-between px-5 py-5">
+                                <div className="flex items-center gap-4">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                                        {notifEnabled ? <Bell className="h-5 w-5" /> : <BellOff className="h-5 w-5 opacity-40" />}
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[15px] font-bold tracking-tight">{t("settings.push_notifications")}</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-tighter">{notifEnabled ? t("common.on") : t("common.off")}</span>
+                                    </div>
+                                </div>
+                                <Toggle enabled={notifEnabled} onChange={handleNotifToggle} />
+                            </div>
+                            {notifEnabled && (
+                                <div className="px-5 pb-5 pt-0">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={testNotification}
+                                        className="w-full h-10 rounded-xl bg-primary/5 border-primary/20 text-primary font-black uppercase tracking-widest text-[10px] gap-2 active:scale-95 transition-all"
+                                    >
+                                        <Bell className="h-3 w-3" />
+                                        {t("settings.test_notif")} 🔔
+                                    </Button>
+                                </div>
+                            )}
+                        </Section>
+
+                        <Section label={t("profile.timer_settings")} idx={2}>
+                            <div className="px-5 py-5 space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <Timer className="h-4 w-4 text-primary" />
+                                    <span className="text-[13px] font-black text-muted-foreground uppercase tracking-widest">{t("profile.timer_desc")}</span>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {timerOptions.map((d) => (
                                         <button
-                                            key={c.name}
-                                            disabled={!profile?.is_premium}
-                                            onClick={() => updateAccentColor(c.value)}
-                                            className={cn(
-                                                "h-6 w-6 rounded-full border-2 transition-all",
-                                                (profile?.accent_color ?? "160 84% 39%") === c.value ? "border-foreground scale-110" : "border-transparent",
-                                                !profile?.is_premium && "opacity-50 grayscale"
-                                            )}
-                                            style={{ background: `hsl(${c.value})` }}
-                                        />
+                                            key={d}
+                                            onClick={() => handleTimerChange(d)}
+                                            className={cn("flex-1 min-w-[60px] rounded-2xl py-3 text-xs font-black border", (profile?.timer_days ?? 30) === d ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/40 text-muted-foreground border-white/5")}
+                                        >
+                                            {d}{t("profile.days_suffix")}
+                                        </button>
                                     ))}
                                 </div>
                             </div>
-                        </div>
+                        </Section>
+                    </div>
 
-                        <div className="px-5 py-4 flex items-center justify-between border-t border-border/30">
-                            <div className="flex items-center gap-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500"><Sun className="h-5 w-5" /></div>
-                                <span className="text-[15px] font-bold tracking-tight">{t("settings.theme")}</span>
+                    <div className="space-y-8">
+                        <Section label={t("settings.appearance")} idx={3}>
+                            <Row icon={Languages} label={t("profile.language")} onClick={() => setLangOpen(true)} right={<span className="text-xs font-black uppercase text-muted-foreground">{currentLang.label}</span>} />
+
+                            {/* Accent Color Picker */}
+                            <div className="px-5 py-5 space-y-4 border-t border-border/30">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary"><Palette className="h-5 w-5" /></div>
+                                        <div className="flex flex-col">
+                                            <span className="text-[15px] font-bold tracking-tight">{t("settings.accent_color")}</span>
+                                            {!profile?.is_premium && <span className="text-[9px] font-black text-amber-500 uppercase">{t("settings.premium_only")}</span>}
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {accentColors.map((c) => (
+                                            <button
+                                                key={c.name}
+                                                disabled={!profile?.is_premium}
+                                                onClick={() => updateAccentColor(c.value)}
+                                                className={cn(
+                                                    "h-6 w-6 rounded-full border-2 transition-all",
+                                                    (profile?.accent_color ?? "160 84% 39%") === c.value ? "border-foreground scale-110" : "border-transparent",
+                                                    !profile?.is_premium && "opacity-50 grayscale"
+                                                )}
+                                                style={{ background: `hsl(${c.value})` }}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
-                            <div className="flex gap-1 rounded-2xl bg-secondary/60 p-1">
-                                {(["light", "dark", "system"] as Theme[]).map((th) => (
-                                    <button key={th} onClick={() => handleThemeChange(th)} className={cn("rounded-xl px-3 py-1.5 text-xs font-black", theme === th ? "bg-background text-primary" : "text-muted-foreground/60")}>
-                                        {th === "light" ? <Sun className="h-3.5 w-3.5" /> : th === "dark" ? <Moon className="h-3.5 w-3.5" /> : <Smartphone className="h-3.5 w-3.5" />}
-                                    </button>
-                                ))}
+
+                            <div className="px-5 py-4 flex items-center justify-between border-t border-border/30">
+                                <div className="flex items-center gap-4">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500"><Sun className="h-5 w-5" /></div>
+                                    <span className="text-[15px] font-bold tracking-tight">{t("settings.theme")}</span>
+                                </div>
+                                <div className="flex gap-1 rounded-2xl bg-secondary/60 p-1">
+                                    {(["light", "dark", "system"] as Theme[]).map((th) => (
+                                        <button key={th} onClick={() => handleThemeChange(th)} className={cn("rounded-xl px-3 py-1.5 text-xs font-black", theme === th ? "bg-background text-primary" : "text-muted-foreground/60")}>
+                                            {th === "light" ? <Sun className="h-3.5 w-3.5" /> : th === "dark" ? <Moon className="h-3.5 w-3.5" /> : <Smartphone className="h-3.5 w-3.5" />}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
+                        </Section>
+
+                        <Section label={t("settings.legal_support")} idx={4}>
+                            <Row icon={ShieldCheck} label={t("settings.test_protocol")} onClick={handleTestProtocol} right={testingProtocol ? <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" /> : <ArrowRight className="h-4 w-4 opacity-20" />} />
+                            <Row icon={FileText} label={t("settings.preview_msg")} onClick={() => setPreviewOpen(true)} />
+                            <Row icon={Palette} label={t("settings.feedback")} onClick={() => window.open('mailto:feedback@life-switch.app')} />
+                            <Row icon={Users} label={t("settings.support")} onClick={() => window.open('mailto:support@life-switch.app')} />
+                            <Row icon={HelpCircle} label={t("nav.faq")} onClick={() => navigate("/faq")} />
+                            <Row icon={FileText} label={t("legal.tos_title")} onClick={() => navigate("/legal")} />
+                            <Row icon={ShieldAlert} label={t("legal.privacy_title")} onClick={() => navigate("/privacy")} />
+                            <Row icon={Info} label={t("about.title")} onClick={() => navigate("/about")} />
+                        </Section>
+
+                        <div className="space-y-4 pt-4">
+                            <button
+                                onClick={() => { setDeletePassword(""); setDeleteOpen(true); }}
+                                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-destructive/10 py-4 text-sm font-bold text-destructive transition-colors hover:bg-destructive/20"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                {t("profile.delete_account")}
+                            </button>
+                            <Button variant="outline" onClick={logout} className="w-full h-15 rounded-[22px] border-destructive/20 text-destructive bg-destructive/5 font-black tracking-tight gap-3 active:scale-95 transition-all outline-none">
+                                <LogOut className="h-5 w-5" />
+                                {t("profile.logout")}
+                            </Button>
                         </div>
-                    </Section>
-
-                    <Section label={t("settings.legal_support")} idx={4}>
-                        <Row icon={ShieldCheck} label={t("settings.test_protocol")} onClick={handleTestProtocol} right={testingProtocol ? <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" /> : <ArrowRight className="h-4 w-4 opacity-20" />} />
-                        <Row icon={FileText} label={t("settings.preview_msg")} onClick={() => setPreviewOpen(true)} />
-                        <Row icon={Palette} label={t("settings.feedback")} onClick={() => window.open('mailto:feedback@life-switch.app')} />
-                        <Row icon={Users} label={t("settings.support")} onClick={() => window.open('mailto:support@life-switch.app')} />
-                        <Row icon={HelpCircle} label={t("nav.faq")} onClick={() => navigate("/faq")} />
-                        <Row icon={FileText} label={t("legal.tos_title")} onClick={() => navigate("/legal")} />
-                        <Row icon={ShieldAlert} label={t("legal.privacy_title")} onClick={() => navigate("/privacy")} />
-                        <Row icon={Info} label={t("about.title")} onClick={() => navigate("/about")} />
-                    </Section>
-
-                    <div className="space-y-4 pt-4">
-                        <Button variant="outline" onClick={logout} className="w-full h-15 rounded-[22px] border-destructive/20 text-destructive bg-destructive/5 font-black tracking-tight gap-3 active:scale-95 transition-all outline-none">
-                            <LogOut className="h-5 w-5" />
-                            {t("profile.logout")}
-                        </Button>
-                        <button onClick={() => setDeleteOpen(true)} className="w-full text-center py-4 text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 hover:text-destructive">
-                            {t("profile.delete_account")}
-                        </button>
                     </div>
                 </div>
 
                 <div className="pb-10 pt-4 text-center">
                     <p className="text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.3em]">Life Switch Protocol v1.0.4</p>
                 </div>
-            </div>
 
-            <Dialog open={langOpen} onOpenChange={setLangOpen}>
-                <DialogContent className="max-w-[85vw] w-full rounded-[40px] px-6 py-8 border-white/10 shadow-3xl backdrop-blur-2xl bg-card/90">
-                    <DialogHeader className="pb-4"><DialogTitle className="text-2xl font-black text-center tracking-tight">{t("profile.choose_lang")}</DialogTitle></DialogHeader>
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                        {languages.map((l) => (
-                            <button key={l.code} onClick={() => { updateLanguage(l.code); setLangOpen(false); toast.success(t("profile.lang_updated")); }} className={cn("relative flex flex-col items-center gap-3 rounded-[24px] p-6 transition-all border", l.code === (profile?.language ?? "fr") ? "bg-primary border-primary text-primary-foreground" : "bg-secondary/40 border-white/5 text-foreground")}>
-                                <span className="text-3xl">{l.flag}</span>
-                                <span className="text-xs font-black uppercase tracking-widest">{l.label}</span>
-                            </button>
-                        ))}
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog open={editNameOpen} onOpenChange={setEditNameOpen}>
-                <DialogContent className="max-w-[85vw] w-full rounded-[40px] px-6 py-8 border-white/10 shadow-3xl backdrop-blur-2xl bg-card/90">
-                    <DialogHeader className="pb-4"><DialogTitle className="text-2xl font-black tracking-tight text-center">{t("profile.edit_name")}</DialogTitle></DialogHeader>
-                    <div className="space-y-6 pt-2">
-                        <Input value={nameInput} onChange={(e) => setNameInput(e.target.value)} placeholder={t("profile.name_placeholder")} className="h-15 rounded-2xl bg-secondary/40 border-border/60 text-center font-bold text-lg" maxLength={50} autoFocus onKeyDown={(e) => e.key === "Enter" && handleSaveName()} />
-                        <Button onClick={handleSaveName} disabled={savingName || !nameInput.trim()} className="w-full h-15 rounded-[22px] font-black text-lg active:scale-95 transition-all">
-                            {savingName ? <div className="h-5 w-5 animate-spin rounded-full border-2 border-background border-t-transparent" /> : t("profile.save_name")}
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                <DialogContent className="max-w-[85vw] w-full rounded-[40px] px-6 py-8 border-white/10 shadow-3xl backdrop-blur-2xl bg-card/90">
-                    <DialogHeader className="pb-4"><DialogTitle className="text-2xl font-black tracking-tight text-center text-destructive">DELETE ACCOUNT</DialogTitle></DialogHeader>
-                    <div className="space-y-6 pt-2">
-                        <div className="flex flex-col items-center gap-4 text-center">
-                            <div className="h-16 w-16 bg-destructive/10 rounded-full flex items-center justify-center"><ShieldAlert className="h-8 w-8 text-destructive" /></div>
-                            <p className="text-sm font-bold text-muted-foreground/80 leading-relaxed px-4">{t("profile.delete_confirm")}</p>
+                <Dialog open={langOpen} onOpenChange={setLangOpen}>
+                    <DialogContent className="max-w-[85vw] sm:max-w-[400px] w-full rounded-[40px] px-6 py-8 border-white/10 shadow-3xl backdrop-blur-2xl bg-card/90">
+                        <DialogHeader className="pb-4"><DialogTitle className="text-2xl font-black text-center tracking-tight">{t("profile.choose_lang")}</DialogTitle></DialogHeader>
+                        <div className="grid grid-cols-2 gap-3 pt-2">
+                            {languages.map((l) => (
+                                <button key={l.code} onClick={() => { updateLanguage(l.code); setLangOpen(false); toast.success(t("profile.lang_updated")); }} className={cn("relative flex flex-col items-center gap-3 rounded-[24px] p-6 transition-all border", l.code === (profile?.language ?? "fr") ? "bg-primary border-primary text-primary-foreground" : "bg-secondary/40 border-white/5 text-foreground")}>
+                                    <span className="text-3xl">{l.flag}</span>
+                                    <span className="text-xs font-black uppercase tracking-widest">{l.label}</span>
+                                </button>
+                            ))}
                         </div>
-                        {isEmailUser && (
-                            <Input type="password" value={deletePassword} onChange={(e) => setDeletePassword(e.target.value)} placeholder={t("profile.delete_password_hint")} className="h-15 rounded-2xl bg-secondary/40 border-border/60 text-center" autoFocus onKeyDown={(e) => e.key === "Enter" && handleDeleteAccount()} />
-                        )}
-                        <Button variant="destructive" onClick={handleDeleteAccount} disabled={deleting || (isEmailUser && !deletePassword)} className="w-full h-15 rounded-[22px] font-black text-lg active:scale-95 transition-all">
-                            {deleting ? "..." : t("profile.delete_confirm_btn")}
-                        </Button>
-                        <button onClick={() => setDeleteOpen(false)} className="w-full text-center text-xs font-black uppercase tracking-widest text-muted-foreground/60">{t("common.cancel")}</button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-            <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-                <DialogContent className="max-w-[90vw] w-full rounded-[40px] px-0 py-0 overflow-hidden border-white/10 shadow-3xl bg-background">
-                    <div className="bg-primary p-6 text-white">
-                        <DialogTitle className="text-xl font-black italic tracking-tighter uppercase">Aperçu du Protocole</DialogTitle>
-                        <p className="text-[10px] font-bold opacity-80 uppercase tracking-widest mt-1">Exemple d'email envoyé aux bénéficiaires</p>
-                    </div>
-                    <div className="p-8 space-y-6">
-                        <div className="space-y-2 border-b border-border pb-4">
-                            <p className="text-[10px] font-black text-muted-foreground uppercase">De: <span className="text-foreground">protocol@life-switch.app</span></p>
-                            <p className="text-[10px] font-black text-muted-foreground uppercase">Sujet: <span className="text-primary">IMPORTANT : Message de sécurité de {profile?.display_name || "un proche"}</span></p>
+                    </DialogContent>
+                </Dialog>
+
+                <Dialog open={editNameOpen} onOpenChange={setEditNameOpen}>
+                    <DialogContent className="max-w-[85vw] w-full rounded-[40px] px-6 py-8 border-white/10 shadow-3xl backdrop-blur-2xl bg-card/90">
+                        <DialogHeader className="pb-4"><DialogTitle className="text-2xl font-black tracking-tight text-center">{t("profile.edit_name")}</DialogTitle></DialogHeader>
+                        <div className="space-y-6 pt-2">
+                            <Input value={nameInput} onChange={(e) => setNameInput(e.target.value)} placeholder={t("profile.name_placeholder")} className="h-15 rounded-2xl bg-secondary/40 border-border/60 text-center font-bold text-lg" maxLength={50} autoFocus onKeyDown={(e) => e.key === "Enter" && handleSaveName()} />
+                            <Button onClick={handleSaveName} disabled={savingName || !nameInput.trim()} className="w-full h-15 rounded-[22px] font-black text-lg active:scale-95 transition-all">
+                                {savingName ? <div className="h-5 w-5 animate-spin rounded-full border-2 border-background border-t-transparent" /> : t("profile.save_name")}
+                            </Button>
                         </div>
-                        <div className="space-y-4 text-sm leading-relaxed">
-                            <p>Bonjour,</p>
-                            <p>Ceci est un message automatisé sécurisé envoyé par le protocole <strong>Life Switch</strong> de la part de {profile?.display_name}.</p>
-                            <p className="bg-secondary/30 p-4 rounded-2xl italic border-l-4 border-primary">
-                                "{profile?.display_name} a configuré ce message pour vous être transmis en toute sécurité..."
-                            </p>
-                            <div className="pt-4">
-                                <Button className="w-full rounded-2xl h-12 font-black uppercase tracking-widest">Accéder au Coffre Sécurisé</Button>
+                    </DialogContent>
+                </Dialog>
+
+                <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+                    <DialogContent className="max-w-[85vw] w-full rounded-[40px] px-6 py-8 border-white/10 shadow-3xl backdrop-blur-2xl bg-card/90">
+                        <DialogHeader className="pb-4"><DialogTitle className="text-2xl font-black tracking-tight text-center text-destructive">{t("profile.delete_account_title")}</DialogTitle></DialogHeader>
+                        <div className="space-y-6 pt-2">
+                            <div className="flex flex-col items-center gap-4 text-center">
+                                <div className="h-16 w-16 bg-destructive/10 rounded-full flex items-center justify-center"><ShieldAlert className="h-8 w-8 text-destructive" /></div>
+                                <p className="text-sm font-bold text-muted-foreground/80 leading-relaxed px-4">{t("profile.delete_confirm")}</p>
                             </div>
+                            {isEmailUser && (
+                                <Input type="password" value={deletePassword} onChange={(e) => setDeletePassword(e.target.value)} placeholder={t("profile.delete_password_hint")} className="h-15 rounded-2xl bg-secondary/40 border-border/60 text-center" autoFocus onKeyDown={(e) => e.key === "Enter" && handleDeleteAccount()} />
+                            )}
+                            <Button variant="destructive" onClick={handleDeleteAccount} disabled={deleting || (isEmailUser && !deletePassword)} className="w-full h-15 rounded-[22px] font-black text-lg active:scale-95 transition-all">
+                                {deleting ? "..." : t("profile.delete_confirm_btn")}
+                            </Button>
+                            <button onClick={() => setDeleteOpen(false)} className="w-full text-center text-xs font-black uppercase tracking-widest text-muted-foreground/60">{t("common.cancel")}</button>
                         </div>
-                        <button onClick={() => setPreviewOpen(false)} className="w-full text-center text-xs font-black uppercase tracking-widest text-primary pt-4">{t("common.back")}</button>
-                    </div>
-                </DialogContent>
-            </Dialog>
+                    </DialogContent>
+                </Dialog>
+                <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+                    <DialogContent className="max-w-[90vw] w-full rounded-[40px] px-0 py-0 overflow-hidden border-white/10 shadow-3xl bg-background">
+                        <div className="bg-primary p-6 text-white">
+                            <DialogTitle className="text-xl font-black italic tracking-tighter uppercase">{t("protocol.preview_title")}</DialogTitle>
+                            <p className="text-[10px] font-bold opacity-80 uppercase tracking-widest mt-1">{t("protocol.preview_subtitle")}</p>
+                        </div>
+                        <div className="p-8 space-y-6">
+                            <div className="space-y-2 border-b border-border pb-4">
+                                <p className="text-[10px] font-black text-muted-foreground uppercase">{t("protocol.from")} <span className="text-foreground">protocol@life-switch.app</span></p>
+                                <p className="text-[10px] font-black text-muted-foreground uppercase">{t("protocol.subject_prefix")} <span className="text-primary">{profile?.display_name || t("protocol.unknown_sender")}</span></p>
+                            </div>
+                            <div className="space-y-4 text-sm leading-relaxed">
+                                <p>{t("protocol.greeting")}</p>
+                                <p>{t("protocol.message_1", { app: "Life Switch", name: profile?.display_name || t("protocol.unknown_sender") })}</p>
+                                <p className="bg-secondary/30 p-4 rounded-2xl italic border-l-4 border-primary">
+                                    "{t("protocol.message_2_fallback", { name: profile?.display_name || t("protocol.unknown_sender") })}"
+                                </p>
+                                <div className="pt-4">
+                                    <Button className="w-full rounded-2xl h-12 font-black uppercase tracking-widest">{t("protocol.cta")}</Button>
+                                </div>
+                            </div>
+                            <button onClick={() => setPreviewOpen(false)} className="w-full text-center text-xs font-black uppercase tracking-widest text-primary pt-4">{t("common.back")}</button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            </div>
         </div>
     );
 }

@@ -125,7 +125,7 @@ export default function ContactsPage() {
         <div className="absolute bottom-[25%] -left-[10%] h-[350px] w-[350px] rounded-full bg-primary/5 blur-[100px]" />
       </div>
 
-      <div className="mx-auto max-w-sm px-6 relative z-10 space-y-10">
+      <div className="mx-auto max-w-sm sm:max-w-2xl lg:max-w-6xl px-6 relative z-10 space-y-10">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -168,7 +168,7 @@ export default function ContactsPage() {
               </Button>
             </motion.div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {contacts.map((c, idx) => (
                 <motion.div
                   layout
@@ -217,7 +217,7 @@ export default function ContactsPage() {
         </AnimatePresence>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="max-w-[90vw] w-full rounded-[40px] px-6 py-8 border-white/10 shadow-3xl backdrop-blur-2xl bg-card/90">
+          <DialogContent className="max-w-[90vw] sm:max-w-[450px] w-full rounded-[40px] px-6 py-8 border-white/10 shadow-3xl backdrop-blur-2xl bg-card/90">
             <DialogHeader className="pb-4">
               <DialogTitle className="text-2xl font-black tracking-tight text-center">{t("contacts.add_contact")}</DialogTitle>
             </DialogHeader>
@@ -230,7 +230,7 @@ export default function ContactsPage() {
               <Input placeholder={t("contacts.relationship")} value={relationship} onChange={(e) => setRelationship(e.target.value)} className="h-14 rounded-2xl bg-secondary/40 border-border/60 focus:bg-card transition-all px-5" />
 
               <div className="flex items-center gap-2 px-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 py-2">
-                <ShieldCheck className="h-3 w-3 text-emerald-500" /> {t("contacts.encryption_note") || "Ce contact sera prévenu numériquement."}
+                <ShieldCheck className="h-3 w-3 text-emerald-500" /> {t("contacts.encryption_note")}
               </div>
 
               <Button
@@ -246,7 +246,7 @@ export default function ContactsPage() {
 
         {/* Edit contact dialog */}
         <Dialog open={!!editContact} onOpenChange={(v) => { if (!v) { setEditContact(null); setName(""); setEmail(""); setPhone(""); setRelationship(""); } }}>
-          <DialogContent className="max-w-[90vw] w-full rounded-[40px] px-6 py-8 border-white/10 shadow-3xl backdrop-blur-2xl bg-card/90">
+          <DialogContent className="max-w-[90vw] sm:max-w-[450px] w-full rounded-[40px] px-6 py-8 border-white/10 shadow-3xl backdrop-blur-2xl bg-card/90">
             <DialogHeader className="pb-4">
               <DialogTitle className="text-2xl font-black tracking-tight text-center">{t("contacts.edit_contact")}</DialogTitle>
             </DialogHeader>

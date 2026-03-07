@@ -21,6 +21,8 @@ const languages = [
     { code: "zh", label: "中文" },
     { code: "ja", label: "日本語" },
     { code: "ru", label: "Русский" },
+    { code: "nl", label: "Nederlands" },
+    { code: "tr", label: "Türkçe" },
 ];
 
 export default function SignupPage() {
@@ -320,7 +322,7 @@ export default function SignupPage() {
 
                             <div className="py-2 text-center">
                                 <p className="text-[10px] font-black uppercase text-muted-foreground/40 leading-relaxed tracking-widest">
-                                    {t("signup.terms_prefix") || "En m'inscrivant, j'accepte les"}{" "}
+                                    {t("signup.terms_prefix")}{" "}
                                     <button type="button" onClick={() => navigate("/legal")} className="text-primary hover:text-primary/70">{t("legal.tos_title")}</button>
                                     {" "}{t("common.and") || "et"}{" "}
                                     <button type="button" onClick={() => navigate("/privacy")} className="text-primary hover:text-primary/70">{t("legal.privacy_title")}</button>
@@ -363,7 +365,7 @@ export default function SignupPage() {
                                     </div>
                                 ) : (
                                     <div className="space-y-4 text-center">
-                                        <p className="text-xs text-muted-foreground mb-2">Entrez le code envoyé au {phoneNumber}</p>
+                                        <p className="text-xs text-muted-foreground mb-2">{t("auth.otp_sent_hint", { phone: phoneNumber })}</p>
                                         <Input type="text" placeholder={t("auth.otp")} value={otp} onChange={(e) => setOtp(e.target.value)} className="h-14 rounded-2xl text-center text-2xl font-black tracking-[0.5em] bg-card/40 border-border/60" />
                                         <Button type="submit" disabled={submitting} className="h-15 w-full rounded-[20px] text-lg font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                                             {submitting ? "..." : t("auth.verify")}
@@ -434,6 +436,6 @@ export default function SignupPage() {
                     </div>
                 </DialogContent>
             </Dialog>
-        </div>
+        </div >
     );
 }

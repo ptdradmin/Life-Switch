@@ -19,6 +19,8 @@ const languages = [
   { code: "zh", label: "中文" },
   { code: "ja", label: "日本語" },
   { code: "ru", label: "Русский" },
+  { code: "nl", label: "Nederlands" },
+  { code: "tr", label: "Türkçe" },
 ];
 
 const containerVariants = {
@@ -160,7 +162,7 @@ export default function PresentationPage() {
 
       {/* Features */}
       <section id="features" className="px-6 py-32 z-10 relative">
-        <div className="mx-auto max-w-xl space-y-20">
+        <div className="mx-auto max-w-xl sm:max-w-4xl lg:max-w-6xl space-y-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -171,7 +173,7 @@ export default function PresentationPage() {
             <h2 className="text-4xl font-black text-foreground sm:text-5xl leading-tight italic">{t("pres.features_title")}</h2>
           </motion.div>
 
-          <div className="grid gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {features.map((f, idx) => (
               <motion.div
                 key={f.title}
@@ -205,7 +207,7 @@ export default function PresentationPage() {
 
       {/* How it works */}
       <section className="bg-foreground text-background px-6 py-32 rounded-t-[64px] z-10 relative shadow-[0_-20px_100px_rgba(0,0,0,0.2)]">
-        <div className="mx-auto max-w-xl space-y-24">
+        <div className="mx-auto max-w-xl sm:max-w-4xl lg:max-w-6xl space-y-24">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -216,8 +218,8 @@ export default function PresentationPage() {
             <h2 className="text-4xl font-black sm:text-6xl">{t("pres.how_title")}</h2>
           </motion.div>
 
-          <div className="relative space-y-16">
-            <div className="absolute left-[23px] top-6 bottom-6 w-[2px] bg-background/10 sm:left-6" />
+          <div className="relative grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-x-24 md:gap-y-16">
+            <div className="absolute left-[23px] top-6 bottom-6 w-[2px] bg-background/10 sm:left-6 md:hidden" />
 
             {steps.map((s, idx) => (
               <motion.div

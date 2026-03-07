@@ -28,7 +28,7 @@ export default function FAQPage() {
                 <div className="absolute bottom-[20%] right-[-10%] w-80 h-80 bg-primary/5 rounded-full blur-[120px]" />
             </div>
 
-            <div className="mx-auto max-w-sm relative z-10">
+            <div className="mx-auto max-w-sm sm:max-w-2xl lg:max-w-5xl relative z-10">
                 <motion.button
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -53,7 +53,7 @@ export default function FAQPage() {
                     </div>
                 </motion.div>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {questions.map((item, i) => (
                         <motion.div
                             key={i}

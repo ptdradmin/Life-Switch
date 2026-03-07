@@ -24,6 +24,8 @@ const languages = [
   { code: "zh", label: "中文" },
   { code: "ja", label: "日本語" },
   { code: "ru", label: "Русский" },
+  { code: "nl", label: "Nederlands" },
+  { code: "tr", label: "Türkçe" },
 ];
 
 export default function ProfilePage() {
@@ -119,7 +121,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-background px-5 pb-24 pt-10">
-      <div className="mx-auto max-w-sm space-y-6">
+      <div className="mx-auto max-w-sm sm:max-w-2xl lg:max-w-5xl space-y-6">
         <h1 className="text-2xl font-bold text-foreground">{t("profile.title")}</h1>
 
         {/* User card */}
@@ -166,113 +168,122 @@ export default function ProfilePage() {
           </button>
         </div>
 
-        {/* Preferences */}
-        <div className="space-y-1">
-          <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("profile.preferences")}</p>
-          <div className="rounded-2xl bg-card divide-y divide-border">
-            <button onClick={() => setLangOpen(true)} className="flex w-full items-center justify-between px-4 py-3.5">
-              <div className="flex items-center gap-3">
-                <Globe className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">{t("profile.language")}</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            {/* Preferences */}
+            <div className="space-y-1">
+              <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("profile.preferences")}</p>
+              <div className="rounded-2xl bg-card divide-y divide-border">
+                <button onClick={() => setLangOpen(true)} className="flex w-full items-center justify-between px-4 py-3.5">
+                  <div className="flex items-center gap-3">
+                    <Globe className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium text-foreground">{t("profile.language")}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">{currentLang.label}</span>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                </button>
+                <button
+                  onClick={() => navigate("/premium")}
+                  className="flex w-full items-center justify-between px-4 py-3.5 group"
+                >
+                  <div className="flex items-center gap-3">
+                    <Crown className={cn("h-4 w-4", profile?.is_premium ? "text-primary" : "text-muted-foreground")} />
+                    <span className="text-sm font-medium text-foreground">{t("profile.premium")}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {profile?.is_premium && (
+                      <span className="text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded-md">
+                        Actif
+                      </span>
+                    )}
+                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                </button>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">{currentLang.label}</span>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </div>
-            </button>
-            <button
-              onClick={() => navigate("/premium")}
-              className="flex w-full items-center justify-between px-4 py-3.5 group"
-            >
-              <div className="flex items-center gap-3">
-                <Crown className={cn("h-4 w-4", profile?.is_premium ? "text-primary" : "text-muted-foreground")} />
-                <span className="text-sm font-medium text-foreground">{t("profile.premium")}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                {profile?.is_premium && (
-                  <span className="text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded-md">
-                    Actif
-                  </span>
-                )}
-                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Timer */}
-        <div className="space-y-3">
-          <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("profile.timer_settings")}</p>
-          <div className="flex gap-2">
-            {timerOptions.map((d) => (
-              <button
-                key={d}
-                onClick={() => handleTimerChange(d)}
-                className={cn(
-                  "flex-1 rounded-full py-2 text-sm font-semibold transition-colors",
-                  (profile?.timer_days ?? 30) === d
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-card text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {d} {t("profile.days_suffix")}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Account info */}
-        <div className="rounded-2xl bg-card divide-y divide-border">
-          <div className="flex items-center justify-between px-4 py-3.5">
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <CalendarDays className="h-4 w-4" />
-              <span>{t("profile.member_since")}</span>
             </div>
-            <span className="text-sm font-medium text-foreground">{createdDate}</span>
-          </div>
-          <div className="flex items-center justify-between px-4 py-3.5">
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <Lock className="h-4 w-4" />
-              <span>{t("profile.secrets_count")}</span>
-            </div>
-            <span className="text-sm font-medium text-foreground">{secretsCount}</span>
-          </div>
-        </div>
 
-        {/* Support */}
-        <div className="space-y-1">
-          <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("profile.support")}</p>
-          <div className="rounded-2xl bg-card divide-y divide-border">
-            <button
-              onClick={() => navigate("/faq")}
-              className="flex w-full items-center justify-between py-3 text-sm"
-            >
-              <div className="flex items-center gap-3">
-                <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                <span>{t("profile.faq")}</span>
+            {/* Timer */}
+            <div className="space-y-3">
+              <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("profile.timer_settings")}</p>
+              <div className="flex gap-2">
+                {timerOptions.map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => handleTimerChange(d)}
+                    className={cn(
+                      "flex-1 rounded-full py-2 text-sm font-semibold transition-colors",
+                      (profile?.timer_days ?? 30) === d
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {d} {t("profile.days_suffix")}
+                  </button>
+                ))}
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </button>
-            <button
-              onClick={() => navigate("/legal")}
-              className="flex w-full items-center justify-between py-3 text-sm"
-            >
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-                <span>{t("profile.legal")}</span>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {/* Account info */}
+            <div className="space-y-1">
+              <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("profile.account")}</p>
+              <div className="rounded-2xl bg-card divide-y divide-border">
+                <div className="flex items-center justify-between px-4 py-3.5">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <CalendarDays className="h-4 w-4" />
+                    <span>{t("profile.member_since")}</span>
+                  </div>
+                  <span className="text-sm font-medium text-foreground">{createdDate}</span>
+                </div>
+                <div className="flex items-center justify-between px-4 py-3.5">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <Lock className="h-4 w-4" />
+                    <span>{t("profile.secrets_count")}</span>
+                  </div>
+                  <span className="text-sm font-medium text-foreground">{secretsCount}</span>
+                </div>
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </button>
-            <button
-              onClick={() => navigate("/about")}
-              className="flex w-full items-center justify-between py-3 text-sm"
-            >
-              <div className="flex items-center gap-3">
-                <Info className="h-4 w-4 text-muted-foreground" />
-                <span>{t("about.title")}</span>
+            </div>
+
+            {/* Support */}
+            <div className="space-y-1">
+              <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("profile.support")}</p>
+              <div className="rounded-2xl bg-card divide-y divide-border">
+                <button
+                  onClick={() => navigate("/faq")}
+                  className="flex w-full items-center justify-between px-4 py-3 text-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                    <span>{t("profile.faq")}</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </button>
+                <button
+                  onClick={() => navigate("/legal")}
+                  className="flex w-full items-center justify-between px-4 py-3 text-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                    <span>{t("profile.legal")}</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </button>
+                <button
+                  onClick={() => navigate("/about")}
+                  className="flex w-full items-center justify-between px-4 py-3 text-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                    <span>{t("about.title")}</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </button>
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </button>
+            </div>
           </div>
         </div>
 
@@ -296,7 +307,7 @@ export default function ProfilePage() {
 
       {/* Language picker */}
       <Dialog open={langOpen} onOpenChange={setLangOpen}>
-        <DialogContent className="max-w-sm rounded-2xl">
+        <DialogContent className="max-w-[85vw] sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle>{t("profile.choose_lang")}</DialogTitle>
           </DialogHeader>
@@ -320,7 +331,7 @@ export default function ProfilePage() {
 
       {/* Edit Name Dialog */}
       <Dialog open={editNameOpen} onOpenChange={setEditNameOpen}>
-        <DialogContent className="max-w-sm rounded-2xl">
+        <DialogContent className="max-w-[85vw] sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle>{t("profile.edit_name")}</DialogTitle>
           </DialogHeader>
@@ -347,7 +358,7 @@ export default function ProfilePage() {
 
       {/* Delete Account Dialog */}
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent className="max-w-sm rounded-2xl">
+        <DialogContent className="max-w-[85vw] sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-destructive">{t("profile.delete_account")}</DialogTitle>
           </DialogHeader>
