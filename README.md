@@ -1,70 +1,66 @@
-# 🔐 Life Switch — Héritage Numérique & Life's Switch
+# 🔐 Life Switch — Heritage & Digital Legacy
 
-**Life Switch** est une solution de succession numérique sécurisée permettant de transmettre vos secrets, mots de passe, et messages importants à vos proches si vous ne donnez plus signe de vie.
+**Life Switch** est une plateforme commerciale de succession numérique sécurisée permettant de transmettre vos secrets, mots de passe, documents et messages importants à vos proches en cas d'absence prolongée ou de décès. 
 
-![Aperçu de Life Switch](https://img.shields.io/badge/Status-Version%201.0.4-emerald)
+![Version](https://img.shields.io/badge/Status-Version%201.2.0-emerald)
 ![Encryption](https://img.shields.io/badge/Security-AES--256-blue)
-![Languages](https://img.shields.io/badge/Languages-11%20Supported-orange)
+![Languages](https://img.shields.io/badge/Languages-12%20Supported-orange)
+![License](https://img.shields.io/badge/License-GPLv3-lightgrey)
 
-## ✨ Fonctionnalités Clés
+## ✨ Fonctionnalités Professionnelles
 
-- **🤖 Carnet AI**: Un compagnon intelligent capable d'analyser vos émotions, de vous donner des conseils de sécurité et de générer des rapports chiffrés.
-- **🛡️ Sécurité de Niveau Militaire**: Chiffrement AES-256 de bout en bout. Vos données sont chiffrées sur votre appareil ; nous n'avons jamais accès à vos secrets.
-- **⏱️ Protocole Life's Switch**: Un bouton "Pulse" à presser régulièrement. Si le compte à rebours expire, vos bénéficiaires reçoivent automatiquement un accès sécurisé.
-- **📁 Coffre-fort Multimédia**: Stockez des messages textuels, mais aussi des photos et des vidéos.
-- **🔔 Système de Notification**: Alertes push (Web & Mobile via Firebase) pour vous rappeler de confirmer votre présence.
-- **🌍 Multilingue**: Support complet pour 11 langues (FR, EN, ES, DE, IT, PT, AR, ZH, JA, RU, NL).
-- **🔒 Protection Biométrique**: Sécurisez l'accès à l'application via FaceID ou empreinte digitale (sur mobile).
+- **🛡️ Sécurité de Niveau Militaire**: Chiffrement **AES-256** de bout en bout (Zero-Knowledge). Vos données sont chiffrées localement sur votre appareil avant toute transmission. Même nos administrateurs ne peuvent pas lire vos messages.
+- **🌍 Internationalisation Native**: Interface 100% traduite et localisée dans **12 langues** (FR, EN, ES, DE, IT, PT, AR, ZH, JA, RU, NL, TR) pour une portée mondiale.
+- **⏱️ Protocole Smart Pulse**: Un système de "Pulse" (bouton de confirmation de présence) personnalisable. En cas d'expiration du timer, vos bénéficiaires désignés reçoivent automatiquement un accès sécurisé à vos secrets.
+- **🤖 Carnet AI**: Un assistant intelligent analysant votre score de sécurité et votre héritage numérique pour vous conseiller en temps réel, tout en respectant votre vie privée.
+- **📂 Coffre-fort Hybride**: Stockage haute performance pour messages, codes, documents, photos et vidéos.
+- **🔔 Système de Notification Cross-Platform**: Alertes intelligentes (Web & Mobile) via Firebase Cloud Messaging pour garantir que vous ne manquiez jamais un "Pulse".
+- **🔒 Authentification Biométrique**: Support natif de FaceID et TouchID sur mobile via Capacitor.
 
-## 🛠️ Stack Technique
+## 🛠️ Stack Technique (Multi-Cloud)
 
-- **Frontend**: Vite, React, TypeScript, Tailwind CSS
-- **UI Components**: Shadcn/ui, Framer Motion, Lucide React
-- **Backend**: Firebase (Auth, Firestore, Cloud Messaging, App Check)
-- **Stockage**: Supabase Storage
-- **Cryptographie**: CryptoJS (AES-256)
-- **Mobile**: Capacitor (Support Android/iOS natif)
-- **AI**: OpenRouter API & Groq API
+L'architecture de Life Switch repose sur une pile technologique hybride garantissant vitesse, sécurité et fiabilité :
 
-## 🧠 Comment ça marche (Technique)
+- **Frontend**: Vite, React 18, TypeScript, Tailwind CSS
+- **Design System**: Shadcn/ui & Framer Motion (Animations Premium)
+- **Hébergement & Auth**: Firebase Hosting & Firebase Auth
+- **Base de données**: Firebase Firestore (Temps réel & Off-line)
+- **Stockage Cloud**: Supabase Storage (Bucket hautement sécurisé)
+- **IA**: OpenRouter & Groq (Modèles LLM avancés via API sécurisée)
+- **Mobile SDK**: Capacitor JS (Android & iOS)
+- **Localisation**: i18next avec synchronisation automatisée des locales
 
-Le projet repose sur une architecture **Zero-Knowledge** et un système de **Life's Switch** :
+## 🧠 Architecture Zero-Knowledge
 
-1.  **Chiffrement Local** : Quand vous créez un secret, il est chiffré dans le navigateur à l'aide de `CryptoJS` (AES-256) avec une clé dérivée de votre UID Firebase et d'un sel statique.
-2.  **Stockage** : Seul le contenu *chiffré* est envoyé à Firestore. Même les administrateurs de la base de données ne peuvent pas lire vos messages.
-3.  **Le Pulse** : Chaque pression sur le bouton "Vivant" met à jour le champ `last_check_in` dans votre profil Firestore.
-4.  **Déclenchement Automatique** : Un service backend (Cloud Functions ou monitoring) surveille les timers. Si `maintenant - last_check_in > timer_choisi`, le système libère les clés d'accès (ou les documents chiffrés) aux emails des bénéficiaires désignés.
-5.  **Carnet AI** : Utilise le contexte local (score de sécurité, humeur) pour fournir des conseils sans jamais stocker ces données en clair sur un serveur tiers.
+La confidentialité n'est pas une option, c'est notre fondation :
 
-## 🚀 Installation et Lancement
+1.  **Chiffrement Client-Side** : Vos secrets sont chiffrés par `CryptoJS` avant de quitter votre navigateur/téléphone.
+2.  **Clés Uniques** : Chaque utilisateur génère ses propres clés de chiffrement basées sur son identité et des sels de sécurité dynamiques.
+3.  **Libération Automatisée** : Le protocole de transmission aux bénéficiaires est sécurisé par des règles de sécurité Firestore strictes et des fonctions cloud surveillant le timer d'inactivité.
 
-Le projet nécessite Node.js installé.
+## 🚀 Installation et Lancement (Développement)
 
-### Étapes :
+Le projet nécessite Node.js 18+.
 
 ```sh
-# 1. Cloner le projet
+# 1. Cloner le dépôt
 git clone https://github.com/ptdradmin/Life-Switch.git
 cd Life-Switch
 
-# 2. Installer les dépendances
+# 2. Installation
 npm install
 
-# 3. Configurer les variables d'environnement
-# Créez un fichier .env à la racine avec vos clés Firebase, Supabase, Groq et OpenRouter
+# 3. Environnement
+# Configurez vos clés Firebase (API_KEY, AUTH_DOMAIN, etc.) et Supabase dans le fichier .env
 cp .env.example .env
 
-# 4. Lancer le serveur de développement
+# 4. Exécution
 npm run dev
 ```
 
-## 🤝 Contribution
+## ⚖️ Licence et Commercialisation
 
-Les contributions sont les bienvenues ! Consultez [CONTRIBUTING.md](CONTRIBUTING.md) pour plus de détails.
-
-## ⚖️ Licence
-
-Ce projet est sous licence **GPLv3**. Voir le fichier [LICENSE](LICENSE) pour plus d'informations.
+Ce projet est sous licence **GPLv3**. Pour toute demande concernant une utilisation commerciale spécifique ou des services de support Entreprise, veuillez nous contacter.
 
 ---
-*Ce projet a été conçu avec une priorité absolue sur la confidentialité et la souveraineté numérique des utilisateurs.*
+*Life Switch — Parce que votre héritage numérique mérite la plus haute protection.*
