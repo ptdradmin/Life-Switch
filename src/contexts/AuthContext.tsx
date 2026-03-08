@@ -5,9 +5,13 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  setPersistence,
+  browserLocalPersistence,
   signOut,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   RecaptchaVerifier,
   signInWithPhoneNumber,
   deleteUser,
@@ -83,74 +87,108 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let unsubscribeProfile: () => void = () => { };
+    let isMounted = true;
 
-    const unsubscribeAuth = onAuthStateChanged(auth, async (u) => {
-      setUser(u);
+    const initAuth = async () => {
+      // 1. Detect if we are returning from a Google redirect
+      const isRedirecting = localStorage.getItem("pending_google_login") === "true";
 
-      // Si aucun utilisateur, nous pouvons arrêter le chargement immédiatement
-      if (!u) {
-        setProfile(null);
-        setLoading(false);
-        return;
+      if (isRedirecting) {
+        console.log("MOBILE: Redirect detected, locking loading screen.");
+        setLoading(true);
       }
 
-      // 1. Tenter d'obtenir le profil depuis le CACHE immédiatement pour la vitesse
-      const profileRef = doc(db, "profiles", u.uid);
+      // 1. Force local persistence for mobile session recovery
       try {
-        const cachedSnap = await getDocFromCache(profileRef);
-        if (cachedSnap.exists()) {
-          const data = cachedSnap.data() as any;
-          setProfile({
-            ...data,
-            last_check_in: data.last_check_in?.toDate ? data.last_check_in.toDate() : data.last_check_in,
-            created_at: data.created_at?.toDate ? data.created_at.toDate() : data.created_at,
-          });
-          setLoading(false); // Cache trouvé, nous pouvons afficher l'application !
-        }
-      } catch (e) {
-        // Cache manquant ou erreur, ignorer et laisser onSnapshot gérer
+        await setPersistence(auth, browserLocalPersistence);
+      } catch (err) {
+        console.error("Persistence error:", err);
       }
 
-      // 2. Mettre en place un écouteur en temps réel
-      unsubscribeProfile = onSnapshot(profileRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const data = docSnap.data() as any;
-          const processedProfile: Profile = {
-            ...data,
-            last_check_in: data.last_check_in?.toDate ? data.last_check_in.toDate() : data.last_check_in,
-            created_at: data.created_at?.toDate ? data.created_at.toDate() : data.created_at,
-          };
-          setProfile(processedProfile);
-          if (processedProfile.accent_color) {
-            document.documentElement.style.setProperty('--primary', processedProfile.accent_color);
-          }
-          setLoading(false);
-        } else {
-          const defaultProfile = {
-            language: localLanguage || "fr",
-            timer_days: 30,
-            last_check_in: serverTimestamp(),
-            display_name: u.displayName || "",
-            created_at: serverTimestamp(),
-            onboarding_shown: false,
-            email: u.email
-          };
-          setDoc(profileRef, defaultProfile).then(() => {
-            setProfile(defaultProfile as any);
+      // 2. Process Redirect Result
+      try {
+        const result = await getRedirectResult(auth);
+        if (result?.user && isMounted) {
+          setUser(result.user);
+          localStorage.removeItem("pending_google_login");
+        }
+      } catch (error) {
+        console.error("Redirect processing error:", error);
+        localStorage.removeItem("pending_google_login");
+      }
+
+      // 3. Listen for Auth State
+      const unsubscribeAuth = onAuthStateChanged(auth, async (u) => {
+        if (!isMounted) return;
+
+        if (u) {
+          setUser(u);
+          localStorage.removeItem("pending_google_login");
+
+          const profileRef = doc(db, "profiles", u.uid);
+          unsubscribeProfile = onSnapshot(profileRef, (docSnap) => {
+            if (!isMounted) return;
+            if (docSnap.exists()) {
+              const data = docSnap.data() as any;
+              setProfile({
+                ...data,
+                last_check_in: data.last_check_in?.toDate ? data.last_check_in.toDate() : data.last_check_in,
+                created_at: data.created_at?.toDate ? data.created_at.toDate() : data.created_at,
+              });
+              if (data.accent_color) {
+                document.documentElement.style.setProperty('--primary', data.accent_color);
+              }
+              setLoading(false);
+            } else {
+              const defaultProfile = {
+                language: localLanguage || "fr",
+                timer_days: 30,
+                last_check_in: serverTimestamp(),
+                display_name: u.displayName || "",
+                created_at: serverTimestamp(),
+                onboarding_shown: false,
+                email: u.email
+              };
+              setDoc(profileRef, defaultProfile).then(() => {
+                if (isMounted) {
+                  setProfile(defaultProfile as any);
+                  setLoading(false);
+                }
+              });
+            }
+          }, (err) => {
+            console.error("Profile sync error:", err);
             setLoading(false);
           });
+          requestNotificationPermission(u.uid);
+        } else {
+          const stillRedirecting = localStorage.getItem("pending_google_login") === "true";
+
+          if (!stillRedirecting) {
+            setUser(null);
+            setProfile(null);
+            setLoading(false);
+          } else {
+            // Force a 5-second wait for mobile session restoration (down from 10s)
+            setTimeout(() => {
+              if (isMounted && !auth.currentUser) {
+                console.log("MOBILE: Giving up on redirect restoration.");
+                localStorage.removeItem("pending_google_login");
+                setLoading(false);
+              }
+            }, 5000);
+          }
         }
-      }, (error) => {
-        console.error("Erreur de synchronisation du profil :", error);
-        setLoading(false);
       });
 
-      requestNotificationPermission(u.uid);
-    });
+      return unsubscribeAuth;
+    };
 
+    const cleanupPromise = initAuth();
     return () => {
-      unsubscribeAuth();
-      unsubscribeProfile();
+      isMounted = false;
+      cleanupPromise.then(unsub => unsub && unsub());
+      if (unsubscribeProfile) unsubscribeProfile();
     };
   }, []);
 
@@ -195,11 +233,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
   const loginWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+
     try {
-      const provider = new GoogleAuthProvider();
+      // signInWithPopup works on iOS Safari when triggered by a user click.
+      // signInWithRedirect fails on iOS 17+ due to Apple's ITP blocking cross-site cookies.
       await signInWithPopup(auth, provider);
       return {};
     } catch (error: any) {
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+        // Only fall back to redirect if popup is explicitly blocked by the browser
+        localStorage.setItem("pending_google_login", "true");
+        await signInWithRedirect(auth, provider);
+        return {};
+      }
       return { error: error.message };
     }
   };

@@ -4,16 +4,16 @@
   # 🔐 Life Switch
   ### *Your Digital Legacy, Reimagined & Secured.*
   
-  [![Version](https://img.shields.io/badge/Version-1.2.0-00df9a?style=for-the-badge)](https://github.com/ptdradmin/Life-Switch)
-  [![Security](https://img.shields.io/badge/Security-AES--256-blue?style=for-the-badge)](https://github.com/ptdradmin/Life-Switch)
+  [![Build Status](https://img.shields.io/github/actions/workflow/status/ptdradmin/Life-Switch/main.yml?branch=main&style=for-the-badge&logo=github)](https://github.com/ptdradmin/Life-Switch/actions)
+  [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge)](https://www.gnu.org/licenses/gpl-3.0)
   [![Languages](https://img.shields.io/badge/Languages-12--Supported-orange?style=for-the-badge)](https://github.com/ptdradmin/Life-Switch)
-  [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Mobile-8A2BE2?style=for-the-badge)](https://github.com/ptdradmin/Life-Switch)
+  [![Help Wanted](https://img.shields.io/badge/Help%20Wanted-Welcome-8A2BE2?style=for-the-badge)](CONTRIBUTING.md)
 
   ---
 
   **Life Switch** est une plateforme commerciale de succession numérique garantissant la transmission sécurisée de vos secrets, identifiants et documents à vos proches en cas d'impossibilité de répondre.
 
-  [Découvrir l'App](https://life-switch-mvp-2026.web.app) • [Contribuer](CONTRIBUTING.md) • [Sécurité](#-architecture-zero-knowledge)
+  [Découvrir l'App](https://life-switch-mvp-2026.web.app) • [Contribuer (Help Wanted)](CONTRIBUTING.md) • [Sécurité & Bug Bounty](SECURITY.md)
 </div>
 
 ## 💎 Fonctionnalités Elite
@@ -56,9 +56,28 @@ git clone https://github.com/ptdradmin/Life-Switch.git
 # 2. Installez le moteur
 npm install
 
-# 3. Allumez les propulseurs
+# 3. Configurez vos clés et secrets d'API
+cp .env.example .env.local
+
+# 4. Allumez les propulseurs
 npm run dev
 ```
+
+### 🔐 Gestion des Secrets (Variables d'Environnement)
+
+Pour faire tourner le projet **Life Switch** en local, vous avez besoin de configurer Firebase, Supabase et les clés des modèles d'intelligence artificielle utilisés par "Carnet". 
+Ouvrez votre fichier `.env.local` et ajoutez-y vos jetons de développement :
+
+| Clé | Fournisseur | Rôle dans l'application |
+| :--- | :--- | :--- |
+| `VITE_FIREBASE_*` | **Firebase** | Identifiants pour Firebase Auth et Cloud Firestore. |
+| `VITE_SUPABASE_URL` | **Supabase** | Stockage haute-fidélité pour les images et vidéos 4K du coffre. |
+| `VITE_SUPABASE_ANON_KEY` | **Supabase** | Clé pour l'API publique (restreinte par nos règles RLS). |
+| `VITE_AES_SALT` | **Sécurité** | Un sel arbitraire utilisé localement pour renforcer la dérivation cryptographique. |
+| `VITE_OPENROUTER_API_KEYS`| **OpenRouter** | Clés API pour solliciter les modèles IA (Gemini, Llama) du journal intime sans lier vos cartes bleues. |
+| `VITE_GROQ_API_KEYS` | **Groq** | Utilisé comme "fallback" d'inférence ultra-rapide si OpenRouter est indisponible. |
+
+**Bonus Open-Source :** Il n'y a pas besoin de payer pour contribuer au projet : inscrivez-vous sur [Firebase (Spark Plan)](https://firebase.google.com/), [Supabase (Plan Gratuit)](https://supabase.com/), [OpenRouter (Filtre Gratuit)](https://openrouter.ai/) et [Groq](https://console.groq.com/).
 
 ## ⚖️ Licence & Commercialisation
 

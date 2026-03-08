@@ -64,10 +64,24 @@ Life Switch est une application mobile de protection numérique et de transmissi
 `;
 
 // ─────────────── BASE PERSONA ───────────────
-const BASE_PERSONA = `Tu es Carnet, un compagnon IA bienveillant, empathique et poétique intégré dans Life Switch.
+const BASE_PERSONA = `Tu es Carnet, le Gardien Personnel de la Mémoire de l'utilisateur.
 ${LIFE_SWITCH_KNOWLEDGE}
-Tu connais parfaitement Life Switch et tu aides les utilisateurs à utiliser l'app, à écrire dans leur journal, à gérer leurs émotions.
-Réponds TOUJOURS dans la langue de l'utilisateur. Sois chaleureux, personnel, concis (2-4 phrases). Pose une question ouverte.`;
+Cette application est le coffre-fort intime de l'utilisateur. Tu es son allié, son confident et son guide.
+Réponds TOUJOURS dans la langue de l'utilisateur. Sois chaleureux, utilise son prénom si tu le connais, et sois très personnel.
+Ton ton doit être poétique, protecteur et encourageant.
+IMPORTANT : N'utilise JAMAIS de syntaxe markdown comme **texte**.
+GAMIFICATION : Tu es le Maître des Quêtes. Propose des missions UNIQUES basées sur ce que l'utilisateur te dit ou sur ses manques (ex: "Tu n'as pas encore de contacts de confiance, veux-tu qu'on règle ça ?").
+Format quête : [QUEST: 💎 | Mission sur mesure].`;
+
+
+
+export interface Quest {
+  icon: string;
+  text: string;
+  xpBonus: number;
+}
+
+
 
 // ─────────────── TYPES ───────────────
 export interface CarnetMessage {
@@ -314,6 +328,58 @@ export async function askCarnet(
     { role: "user", content: moodCtx + userMessage },
   ];
   return tryModels(messages);
+}
+
+// ─────────────── QUEST GENERATOR ───────────────
+export async function generatePersonalizedQuest(
+  userCtx?: UserContext,
+  conversationHistory?: CarnetMessage[],
+  lang = "fr"
+): Promise<Quest> {
+  const langNames: Record<string, string> = {
+    fr: "français", en: "English", es: "español", de: "Deutsch",
+    it: "italiano", pt: "português", ar: "العربية", zh: "中文",
+    ja: "日本語", ru: "русский", nl: "Nederlands", tr: "Türkçe"
+  };
+
+  try {
+    const prompt = `En te basant sur le profil de l'utilisateur et nos derniers échanges, génère une Quête (mission d'écriture) UNIQUE et PERSONNALISÉE pour son journal intime.
+Règle CRITIQUE : La quête doit être rédigée obligatoirement en langue ${langNames[lang] ?? "français"}.
+Elle doit être soit émotionnelle, soit pratique, soit poétique.
+Réponds UNIQUEMENT en JSON: {"icon":"[1 emoji]","text":"[la mission en 1 phrase]","xpBonus":30}`;
+
+    const messages = [
+      { role: "system", content: buildSystemPrompt(userCtx) },
+      ...(conversationHistory ?? []).slice(-4).map((m) => ({
+        role: m.role === "user" ? "user" : "assistant",
+        content: m.text,
+      })),
+      { role: "user", content: prompt },
+    ];
+
+    const result = await tryModels(messages, 150);
+    const json = result.match(/\{[\s\S]*\}/)?.[0];
+    if (json) return JSON.parse(json) as Quest;
+  } catch (err) {
+    console.warn("Quest generation failed", err);
+  }
+
+  const fallbacks: Record<string, string> = {
+    fr: "Écris ce qui te passe par la tête.",
+    en: "Write what's on your mind.",
+    es: "Escribe lo que tengas en mente.",
+    de: "Schreibe, was dir durch den Kopf geht.",
+    it: "Scrivi cosa ti passa par la testa.",
+    pt: "Escreva o que está em sua mente.",
+    ar: "اكتب ما يدور في ذهنك.",
+    zh: "写下你脑海中的想法。",
+    ja: "心に浮かぶことを書いてください。",
+    ru: "Напишите, что у вас на уме.",
+    nl: "Schrijf wat er in je opkomt.",
+    tr: "Aklından geçenleri yaz."
+  };
+
+  return { icon: "📝", text: fallbacks[lang] || fallbacks.fr, xpBonus: 20 };
 }
 
 // ─────────────── EMOTION ANALYSIS ───────────────

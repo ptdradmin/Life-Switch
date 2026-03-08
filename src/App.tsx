@@ -61,11 +61,17 @@ function AppRoutes() {
   }
 
   const getRoutes = () => {
-    if (location.pathname === "/presentation") return <Route path="/presentation" element={<PresentationPage />} />;
+    if (location.pathname === "/presentation" && !user) return <Route path="*" element={<PresentationPage />} />;
     if (location.pathname === "/privacy") return <Route path="/privacy" element={<LegalPage />} />;
     if (location.pathname === "/about" && !user) return <Route path="/about" element={<AboutPage />} />;
     if (location.pathname === "/signup" && !user) return <Route path="/signup" element={<SignupPage />} />;
     if (location.pathname === "/login" && !user) return <Route path="/login" element={<LoginPage />} />;
+
+    // Redirect authenticated users away from public pages
+    if (user && ["/login", "/signup", "/presentation"].includes(location.pathname)) {
+      return <Route path="*" element={<HomePage />} />;
+    }
+
     if (!user) return <Route path="*" element={<PresentationPage />} />;
 
     if (profile && profile.onboarding_shown !== true && location.pathname !== "/onboarding") {

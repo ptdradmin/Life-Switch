@@ -60,9 +60,9 @@ export default function SplashScreen() {
             </motion.div>
 
             {/* Version tag */}
-            <div className="absolute bottom-10 text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground/20">
-                Secure Legacy Protection • v1.0.4
-            </div>
+            <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">
+                Secure Legacy Protection • v1.2.2
+            </p>
         </div>
     );
 }

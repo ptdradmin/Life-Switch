@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "@/hooks/useTranslation";
-import { ShieldCheck, Heart, Clock, Lock, Zap, Activity, Shield, Users, CheckCircle, Crown, PenLine, Send, Sparkles, Bot, Loader2, Save, XCircle } from "lucide-react";
+import { ShieldCheck, Heart, Clock, Lock, Zap, Activity, Shield, Users, CheckCircle, Crown, PenLine, Send, Sparkles, Bot, Loader2, Save, XCircle, Flame, Star, Trophy } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -13,11 +13,45 @@ import { motion, AnimatePresence } from "framer-motion";
 import CryptoJS from "crypto-js";
 import { HomeSkeleton } from "@/components/LoadingSkeletons";
 import { cn } from "@/lib/utils";
-import { askCarnet, getCarnetPrompt, type UserContext } from "@/lib/carnet";
+import { askCarnet, getCarnetPrompt, generatePersonalizedQuest, type UserContext, type Quest } from "@/lib/carnet";
 import BiometricGuard from "@/components/BiometricGuard";
 
 // SEL DE SÉCURITÉ STATIQUE (Ne pas changer une fois en prod !)
 const AES_SALT = import.meta.env.VITE_AES_SALT || "LS_PROT_9X_!v2_Zq78";
+
+// ─── SOUND ENGINE (Web Audio API, no files needed) ───
+const Sound = {
+  ctx: null as AudioContext | null,
+  get(): AudioContext {
+    if (!this.ctx) this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    return this.ctx;
+  },
+  play(freq: number, type: OscillatorType, duration: number, volume = 0.15, delay = 0) {
+    try {
+      const ctx = this.get();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+      gain.gain.setValueAtTime(volume, ctx.currentTime + delay);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+      osc.start(ctx.currentTime + delay);
+      osc.stop(ctx.currentTime + delay + duration);
+    } catch { /* ignore on unsupported browsers */ }
+  },
+  click() { this.play(600, "sine", 0.06, 0.08); },
+  xp() {
+    this.play(523, "sine", 0.1, 0.12);       // C5
+    this.play(659, "sine", 0.1, 0.12, 0.1);  // E5
+    this.play(784, "sine", 0.15, 0.18, 0.2); // G5
+  },
+  levelUp() {
+    [523, 659, 784, 1046].forEach((f, i) => this.play(f, "sine", 0.25, 0.2, i * 0.12));
+  },
+  pulse() { this.play(220, "sine", 0.3, 0.1); this.play(330, "sine", 0.2, 0.08, 0.15); },
+};
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -33,12 +67,95 @@ export default function HomePage() {
   const [carnetReply, setCarnetReply] = useState<string | null>(null);
   const [carnetLoading, setCarnetLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"journal" | "carnet">("journal");
-  const [chatMessages, setChatMessages] = useState<{ role: "user" | "carnet"; text: string }[]>([]);
+  const [chatMessages, setChatMessages] = useState<{ role: "user" | "carnet"; text: string }[]>(() => {
+    try {
+      const saved = localStorage.getItem(`carnet_history_${user?.uid || 'anon'}`);
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [chatInput, setChatInput] = useState("");
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+  const [quickAddContact, setQuickAddContact] = useState<{ name: string; email: string } | null>(null);
 
   // Clé de chiffrement renforcée : UID + Sel
   const encryptionKey = (user?.uid || "fallback-key") + AES_SALT;
+
+  // ─── GAMIFICATION ───
+  const LEVELS = [
+    { min: 0, emoji: "🌱", color: "#6B7280" },
+    { min: 100, emoji: "📝", color: "#3B82F6" },
+    { min: 300, emoji: "🛡️", color: "#8B5CF6" },
+    { min: 700, emoji: "✨", color: "#F59E0B" },
+    { min: 1500, emoji: "👑", color: "#10B981" },
+  ];
+
+  const getLevel = (xp: number) => {
+    for (let i = LEVELS.length - 1; i >= 0; i--) {
+      if (xp >= LEVELS[i].min) return { ...LEVELS[i], index: i };
+    }
+    return { ...LEVELS[0], index: 0 };
+  };
+
+  const getNextLevel = (xp: number) => {
+    const currentIndex = getLevel(xp).index;
+    return currentIndex < LEVELS.length - 1 ? LEVELS[currentIndex + 1] : null;
+  };
+
+  const [journalXP, setJournalXP] = useState<number>(() => {
+    const uid = user?.uid || 'anon';
+    return parseInt(localStorage.getItem(`journal_xp_${uid}`) || '0', 10);
+  });
+  const [journalStreak, setJournalStreak] = useState<number>(() => {
+    const uid = user?.uid || 'anon';
+    return parseInt(localStorage.getItem(`journal_streak_${uid}`) || '0', 10);
+  });
+  const [lastEntryDate, setLastEntryDate] = useState<string>(() => {
+    const uid = user?.uid || 'anon';
+    return localStorage.getItem(`journal_last_date_${uid}`) || '';
+  });
+  const [xpAnimation, setXpAnimation] = useState<number | null>(null);
+
+  const [todayMission, setTodayMission] = useState<Quest>(() => {
+    const uid = user?.uid || 'anon';
+    try {
+      const saved = localStorage.getItem(`journal_mission_${uid}`);
+      if (saved) return JSON.parse(saved);
+    } catch { /* fallback */ }
+    return { icon: "🌱", text: t("gamification.welcome_mission"), xpBonus: 20 };
+  });
+
+  // ─── LANGUAGE SYNC FOR QUESTS ───
+  // Ensure the quest is always in the user's language
+  useEffect(() => {
+    if (!user) return;
+    const uid = user.uid;
+    const savedLang = localStorage.getItem(`journal_mission_lang_${uid}`);
+
+    // Small delay to ensure translations and profile are ready
+    const timer = setTimeout(() => {
+      if (savedLang !== lang) {
+        refreshQuest();
+        localStorage.setItem(`journal_mission_lang_${uid}`, lang || "fr");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [lang, user]);
+
+  const wordCount = diaryText.trim() ? diaryText.trim().split(/\s+/).length : 0;
+  const wordGoal = 50;
+
+  const greetingKey = useMemo(() => {
+    const now = new Date();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    const timeInMinutes = hour * 60 + minute;
+
+    if (timeInMinutes >= 1350) return "home.greeting_night"; // 22:30+
+    if (hour < 5) return "home.greeting_night"; // 00:00 - 04:59
+    if (hour < 12) return "home.greeting_morning";
+    if (hour < 18) return "home.greeting_afternoon";
+    return "home.greeting_evening";
+  }, []);
 
   const moods = [
     { emoji: "😊", label: t("home.mood_happy") },
@@ -85,6 +202,16 @@ export default function HomePage() {
     return () => { unsubS(); unsubC(); clearTimeout(timer); };
   }, [user]);
 
+  // Persist Carnet history to localStorage
+  useEffect(() => {
+    if (!user) return;
+    try {
+      localStorage.setItem(`carnet_history_${user.uid}`, JSON.stringify(chatMessages));
+    } catch { /* ignore */ }
+  }, [chatMessages, user]);
+
+  // Periodic refresh logic could go here if needed
+
   const handleAskCarnet = useCallback(async () => {
     setCarnetLoading(true);
     setCarnetReply(null);
@@ -106,7 +233,7 @@ export default function HomePage() {
     };
     try {
       const message = diaryText.trim() || await getCarnetPrompt(lang ?? "fr");
-      const reply = await askCarnet(message, selectedMood, [], ctx);
+      const reply = await askCarnet(message, selectedMood, chatMessages, ctx);
       setCarnetReply(reply);
       if (!diaryText.trim()) {
         const prompt = await getCarnetPrompt(lang ?? "fr");
@@ -117,6 +244,38 @@ export default function HomePage() {
     }
     setCarnetLoading(false);
   }, [diaryText, selectedMood, lang, profile, secretsCount, contactsCount, user]);
+
+  const refreshQuest = async () => {
+    if (!user) return;
+    setCarnetLoading(true);
+    try {
+      const { score } = getSecurityScore();
+      const stats = getStats();
+      const ctx: UserContext = {
+        name: profile?.display_name,
+        email: user?.email,
+        lang: lang ?? "fr",
+        timerDays: profile?.timer_days,
+        daysElapsed: stats.elapsed,
+        lastCheckIn: profile?.last_check_in ? new Date(profile.last_check_in).toLocaleDateString(lang ?? "fr") : null,
+        secretsCount,
+        contactsCount,
+        securityScore: score,
+        hasPremium: profile?.is_premium,
+        hasPhoto: !!profile?.photo_url,
+        mood: selectedMood,
+      };
+
+      const newQuest = await generatePersonalizedQuest(ctx, chatMessages, lang ?? "fr");
+      setTodayMission(newQuest);
+      localStorage.setItem(`journal_mission_${user.uid}`, JSON.stringify(newQuest));
+      toast.success(t("gamification.mission_generated"));
+      Sound.xp();
+    } catch {
+      toast.error(t("gamification.mission_error"));
+    }
+    setCarnetLoading(false);
+  };
 
   const handleChatSend = useCallback(async () => {
     if (!chatInput.trim() || carnetLoading) return;
@@ -144,6 +303,28 @@ export default function HomePage() {
       const history = chatMessages.map(m => ({ role: m.role, text: m.text }));
       const reply = await askCarnet(userMsg, selectedMood, history, ctx);
       setChatMessages(prev => [...prev, { role: "carnet" as const, text: reply }]);
+
+      // Detect if Carnet proposes a Quest
+      const questMatch = reply.match(/\[QUEST:\s*([^|]+)\s*\|\s*([^\]]+)\]/);
+      if (questMatch && !todayMission.text.includes(questMatch[2])) {
+        const newQuest: Quest = {
+          icon: questMatch[1].trim(),
+          text: questMatch[2].trim(),
+          xpBonus: 20
+        };
+        setTodayMission(newQuest);
+        localStorage.setItem(`journal_mission_${user.uid}`, JSON.stringify(newQuest));
+        toast(t("gamification.new_quest_toast"), {
+          description: newQuest.text,
+          icon: "✨",
+        });
+      }
+      // Detect if Carnet suggests adding a contact/beneficiary
+      const lowerReply = reply.toLowerCase();
+      if ((lowerReply.includes("bénéficiaire") || lowerReply.includes("beneficiar") || lowerReply.includes("proche") || lowerReply.includes("contact")) &&
+        (lowerReply.includes("ajouter") || lowerReply.includes("add") || lowerReply.includes("créer") || lowerReply.includes("ajout"))) {
+        setQuickAddContact({ name: "", email: "" });
+      }
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
       console.error("Chat error:", errMsg);
@@ -155,9 +336,9 @@ export default function HomePage() {
   if (loading) return <HomeSkeleton />;
 
   const lastCheckDate = profile?.last_check_in
-    ? new Date(profile.last_check_in).toLocaleDateString(undefined, {
+    ? new Date(profile.last_check_in).toLocaleDateString(lang ?? "fr", {
       day: "numeric",
-      month: "short",
+      month: "long",
     })
     : t("home.never");
 
@@ -175,6 +356,7 @@ export default function HomePage() {
   const { elapsed, total, pct } = getStats();
 
   const handlePulse = () => {
+    Sound.pulse();
     checkIn();
     toast.success(t("home.confirmed"), {
       icon: <Activity className="h-4 w-4 text-primary" />,
@@ -196,11 +378,56 @@ export default function HomePage() {
         is_encrypted: true,
         mood: selectedMood
       });
-      toast.success(t("diary.saved"));
+
+      // ─── GAMIFICATION: XP + STREAK ───
+      const uid = user.uid;
+      const today = new Date().toDateString();
+      const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+      // Calculate XP earned
+      let earned = 10; // base
+      if (wordCount >= 50) earned += 20;
+      else if (wordCount >= 20) earned += 10;
+      if (selectedMood) earned += 5;
+      earned += todayMission.xpBonus; // mission bonus always awarded
+
+      // Update streak
+      let newStreak = journalStreak;
+      if (lastEntryDate === yesterday) {
+        newStreak = journalStreak + 1;
+      } else if (lastEntryDate !== today) {
+        newStreak = 1;
+      }
+      if (newStreak > journalStreak) earned += newStreak * 2; // streak bonus
+
+      const newXP = journalXP + earned;
+      setJournalXP(newXP);
+      setJournalStreak(newStreak);
+      setLastEntryDate(today);
+      localStorage.setItem(`journal_xp_${uid}`, String(newXP));
+      localStorage.setItem(`journal_streak_${uid}`, String(newStreak));
+      localStorage.setItem(`journal_last_date_${uid}`, today);
+
+      setXpAnimation(earned);
+      setTimeout(() => setXpAnimation(null), 2500);
+
+      // Play sound: level up if new level reached, otherwise XP coins
+      const oldLevel = getLevel(journalXP).index;
+      const newLevel = getLevel(newXP).index;
+      if (newLevel > oldLevel) { Sound.levelUp(); } else { Sound.xp(); }
+
+      toast.success(`✅ ${t("diary.saved")} — +${earned} XP ⭐ ${newStreak > 1 ? `🔥 Streak x${newStreak}` : ''}`, {
+        style: { borderRadius: '20px' }
+      });
       setDiaryText("");
       setSelectedMood(null);
       setCarnetReply(null);
       setDiaryOpen(false);
+
+      // ─── CHAINED QUESTS: One finished, another appears ───
+      setTimeout(() => {
+        refreshQuest();
+      }, 1000);
     } catch (e) {
       console.error("Diary save error:", e);
       toast.error(t("diary.save_error"));
@@ -214,6 +441,7 @@ export default function HomePage() {
       setChatMessages([]);
       setShowSaveConfirm(false);
       setDiaryOpen(false);
+      if (user) localStorage.removeItem(`carnet_history_${user.uid}`);
       return;
     }
 
@@ -236,6 +464,7 @@ export default function HomePage() {
       });
       toast.success(t("carnet.session_saved"));
       setChatMessages([]);
+      if (user) localStorage.removeItem(`carnet_history_${user.uid}`);
       setShowSaveConfirm(false);
       setDiaryOpen(false);
     } catch (e) {
@@ -313,8 +542,8 @@ ${t("carnet.report_footer")}`;
           className="flex items-center justify-between"
         >
           <div className="flex flex-col gap-1">
-            <h2 className="text-2xl font-black text-foreground tracking-tight leading-none">
-              {t("home.greeting", { name: profile?.display_name?.split(" ")[0] || t("home.explorer") })}
+            <h2 className="text-2xl font-black text-foreground tracking-tight leading-loose pt-4">
+              {t(greetingKey, { name: profile?.display_name?.split(" ")[0] || t("home.explorer") })}
             </h2>
             <div className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
@@ -567,60 +796,169 @@ ${t("carnet.report_footer")}`;
 
             <AnimatePresence mode="wait">
               {/* ─── JOURNAL TAB ─── */}
-              {activeTab === "journal" && (
-                <motion.div
-                  key="journal"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="p-6 space-y-5"
-                >
-                  <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">{t("diary.mood")}</p>
-                    <div className="flex justify-between">
-                      {moods.map((m) => (
-                        <button
-                          key={m.emoji}
-                          onClick={() => setSelectedMood(m.emoji)}
-                          className={cn(
-                            "h-12 w-12 rounded-2xl flex items-center justify-center text-2xl transition-all active:scale-90",
-                            selectedMood === m.emoji ? "bg-primary scale-110" : "bg-secondary/40 grayscale opacity-60 hover:grayscale-0 hover:opacity-100"
-                          )}
+              {activeTab === "journal" && (() => {
+                const level = getLevel(journalXP);
+                const nextLevel = getNextLevel(journalXP);
+                const xpForNextLevel = nextLevel ? nextLevel.min - level.min : 0;
+                const xpInCurrentLevel = nextLevel ? journalXP - level.min : 1;
+                const levelPct = nextLevel ? Math.min(100, Math.floor((xpInCurrentLevel / xpForNextLevel) * 100)) : 100;
+
+                return (
+                  <motion.div
+                    key="journal"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="p-5 space-y-4 relative"
+                  >
+                    {/* XP Float Animation */}
+                    <AnimatePresence>
+                      {xpAnimation !== null && (
+                        <motion.div
+                          initial={{ opacity: 1, y: 0, scale: 1 }}
+                          animate={{ opacity: 0, y: -60, scale: 1.5 }}
+                          exit={{ opacity: 0 }}
+                          className="absolute top-4 right-4 z-50 text-2xl font-black text-primary pointer-events-none"
                         >
-                          {m.emoji}
-                        </button>
-                      ))}
+                          +{xpAnimation} ⭐
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* ─── STATS BAR ─── */}
+                    <div className="flex items-center gap-3 bg-secondary/30 rounded-2xl p-3">
+                      {/* Level Badge */}
+                      <div className="flex flex-col items-center justify-center h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 shrink-0">
+                        <span className="text-xl leading-none">{level.emoji}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+                            {t("gamification.level_label")} {t(`gamification.level_${level.index}`)}
+                          </span>
+                          <span className="text-[10px] font-black text-muted-foreground">{journalXP} XP</span>
+                        </div>
+                        <div className="h-2 w-full bg-secondary/60 rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${levelPct}%` }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                            className="h-full bg-primary rounded-full"
+                          />
+                        </div>
+                        {nextLevel && (
+                          <p className="text-[9px] text-muted-foreground/50 mt-0.5">
+                            {t("gamification.next_level_desc", {
+                              emoji: nextLevel.emoji,
+                              label: t(`gamification.level_${level.index + 1}`),
+                              xp: nextLevel.min - journalXP
+                            })}
+                          </p>
+                        )}
+                      </div>
+                      {/* Streak */}
+                      <div className="flex flex-col items-center bg-primary/10 border border-primary/20 rounded-2xl px-3 py-2 shrink-0">
+                        <div className="flex items-center gap-1 mb-0.5">
+                          <Flame className="h-3 w-3 text-primary fill-primary/20" />
+                          <span className="text-lg font-black text-primary leading-none italic">{journalStreak}</span>
+                        </div>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/50">{t("gamification.streak_label")}</span>
+                      </div>
                     </div>
-                  </div>
 
-                  <Textarea
-                    value={diaryText}
-                    onChange={(e) => setDiaryText(e.target.value)}
-                    placeholder={t("diary.placeholder")}
-                    className="min-h-[140px] rounded-3xl bg-secondary/30 border-none p-5 text-base font-medium placeholder:opacity-40 focus-visible:ring-primary/20"
-                    autoFocus
-                  />
+                    {/* ─── DAILY MISSION ─── */}
+                    <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-2xl p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Trophy className="h-4 w-4 text-primary" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">{t("gamification.mission_title")}</span>
+                        <span className="ml-auto text-[10px] font-black text-primary/60">{t("gamification.mission_bonus", { xp: todayMission.xpBonus })}</span>
+                        <button
+                          onClick={refreshQuest}
+                          disabled={carnetLoading}
+                          className="p-1 hover:bg-primary/20 rounded-lg transition-colors disabled:opacity-30"
+                          title={t("gamification.mission_refresh")}
+                        >
+                          <Sparkles className={cn("h-3 w-3 text-primary", carnetLoading && "animate-spin")} />
+                        </button>
+                      </div>
+                      <p className="text-sm font-medium text-foreground/80">{todayMission.icon} {todayMission.text}</p>
+                      <button
+                        onClick={() => setDiaryText(prev => prev ? prev : todayMission.text + "\n\n")}
+                        className="mt-2 text-[10px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors"
+                      >
+                        {t("gamification.mission_use")}
+                      </button>
+                    </div>
 
-                  <Button
-                    onClick={saveDiaryEntry}
-                    disabled={savingDiary || !diaryText.trim()}
-                    className="w-full h-14 rounded-[24px] font-black italic text-lg uppercase tracking-tight gap-3"
-                  >
-                    {savingDiary ? (
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    ) : (
-                      <><Send className="h-5 w-5" />{t("diary.save")}</>
-                    )}
-                  </Button>
+                    {/* ─── MOOD ─── */}
+                    <div className="space-y-2">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">{t("diary.mood")}</p>
+                      <div className="flex justify-between">
+                        {moods.map((m) => (
+                          <button
+                            key={m.emoji}
+                            onClick={() => { setSelectedMood(m.emoji); Sound.click(); }}
+                            className={cn(
+                              "h-12 w-12 rounded-2xl flex items-center justify-center text-2xl transition-all active:scale-90",
+                              selectedMood === m.emoji ? "bg-primary scale-110" : "bg-secondary/40 grayscale opacity-60 hover:grayscale-0 hover:opacity-100"
+                            )}
+                          >
+                            {m.emoji}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
 
-                  <button
-                    onClick={() => setDiaryOpen(false)}
-                    className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 hover:text-primary transition-colors"
-                  >
-                    {t("common.back")}
-                  </button>
-                </motion.div>
-              )}
+                    {/* ─── TEXTAREA + WORD COUNT ─── */}
+                    <div className="relative">
+                      <Textarea
+                        value={diaryText}
+                        onChange={(e) => setDiaryText(e.target.value)}
+                        placeholder={t("diary.placeholder")}
+                        className="min-h-[120px] rounded-3xl bg-secondary/30 border-none p-5 text-base font-medium placeholder:opacity-40 focus-visible:ring-primary/20"
+                        autoFocus
+                      />
+                      {/* Word goal bar */}
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="flex-1 h-1.5 bg-secondary/60 rounded-full overflow-hidden">
+                          <motion.div
+                            animate={{ width: `${Math.min(100, (wordCount / wordGoal) * 100)}%` }}
+                            className={cn(
+                              "h-full rounded-full transition-all",
+                              wordCount >= wordGoal ? "bg-emerald-500" : "bg-primary/60"
+                            )}
+                          />
+                        </div>
+                        <span className={cn(
+                          "text-[10px] font-black shrink-0",
+                          wordCount >= wordGoal ? "text-emerald-500" : "text-muted-foreground/50"
+                        )}>
+                          {t("gamification.words_goal", { count: wordCount, goal: wordGoal })} {wordCount >= wordGoal ? "✓ +20 XP" : ""}
+                        </span>
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={saveDiaryEntry}
+                      disabled={savingDiary || !diaryText.trim()}
+                      className="w-full h-14 rounded-[24px] font-black italic text-lg uppercase tracking-tight gap-3"
+                    >
+                      {savingDiary ? (
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                      ) : (
+                        <><Send className="h-5 w-5" />{t("diary.save")} — Gagner XP ⭐</>
+                      )}
+                    </Button>
+
+                    <button
+                      onClick={() => setDiaryOpen(false)}
+                      className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 hover:text-primary transition-colors"
+                    >
+                      {t("common.back")}
+                    </button>
+                  </motion.div>
+                );
+              })()}
 
               {/* ─── CARNET CHAT TAB ─── */}
               {activeTab === "carnet" && (
@@ -721,7 +1059,13 @@ ${t("carnet.report_footer")}`;
                             ? "bg-primary text-white rounded-br-md"
                             : "bg-secondary/60 text-foreground rounded-bl-md"
                         )}>
-                          {msg.text}
+                          {msg.text.split(/(\*\*[^*]+\*\*|\n)/g).map((part, j) => {
+                            if (part.startsWith("**") && part.endsWith("**")) {
+                              return <span key={j} className="font-black text-primary">{part.slice(2, -2)}</span>;
+                            }
+                            if (part === "\n") return <br key={j} />;
+                            return part;
+                          })}
                         </div>
                       </motion.div>
                     ))}
@@ -736,6 +1080,67 @@ ${t("carnet.report_footer")}`;
                           <span className="h-2 w-2 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "300ms" }} />
                         </div>
                       </div>
+                    )}
+
+                    {/* Quick Add Contact Card */}
+                    {quickAddContact !== null && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex justify-start gap-2"
+                      >
+                        <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center mr-2 mt-1 shrink-0">
+                          <Bot className="h-3 w-3 text-white" />
+                        </div>
+                        <div className="max-w-[85%] bg-primary/10 border border-primary/20 rounded-3xl rounded-bl-md px-4 py-3 space-y-2">
+                          <p className="text-[11px] font-black text-primary uppercase tracking-widest">➕ {t("contacts.add_contact")}</p>
+                          <input
+                            type="text"
+                            placeholder={t("contacts.name")}
+                            value={quickAddContact.name}
+                            onChange={e => setQuickAddContact(q => q ? { ...q, name: e.target.value } : null)}
+                            className="w-full text-sm rounded-xl bg-secondary/50 border-none px-3 py-2 font-medium placeholder:opacity-40 focus:outline-none focus:ring-1 focus:ring-primary/40"
+                          />
+                          <input
+                            type="email"
+                            placeholder={t("contacts.email")}
+                            value={quickAddContact.email}
+                            onChange={e => setQuickAddContact(q => q ? { ...q, email: e.target.value } : null)}
+                            className="w-full text-sm rounded-xl bg-secondary/50 border-none px-3 py-2 font-medium placeholder:opacity-40 focus:outline-none focus:ring-1 focus:ring-primary/40"
+                          />
+                          <div className="flex gap-2 pt-1">
+                            <button
+                              onClick={async () => {
+                                if (!quickAddContact.name || !quickAddContact.email || !user) return;
+                                try {
+                                  await addDoc(collection(db, "contacts"), {
+                                    user_id: user.uid,
+                                    name: quickAddContact.name,
+                                    email: quickAddContact.email,
+                                    phone: null,
+                                    relationship: null,
+                                    created_at: serverTimestamp()
+                                  });
+                                  toast.success(t("contacts.added"));
+                                  setChatMessages(prev => [...prev, { role: "carnet" as const, text: `✅ ${quickAddContact.name} a bien été ajouté(e) comme proche !` }]);
+                                  setQuickAddContact(null);
+                                } catch {
+                                  toast.error("Erreur lors de l'ajout.");
+                                }
+                              }}
+                              className="flex-1 h-8 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all"
+                            >
+                              {t("contacts.add")} ✓
+                            </button>
+                            <button
+                              onClick={() => setQuickAddContact(null)}
+                              className="h-8 px-3 rounded-xl bg-secondary/50 text-muted-foreground text-[10px] font-black uppercase tracking-widest active:scale-95"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
                     )}
                   </div>
 

@@ -304,7 +304,14 @@ export default function VaultPage() {
             </div>
             <motion.button
               whileTap={{ scale: 0.9 }}
-              onClick={() => setOpen(true)}
+              onClick={() => {
+                setEditSecret(null);
+                setTitle("");
+                setContent("");
+                setBeneficiaryId("");
+                setCategory("code");
+                setOpen(true);
+              }}
               className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20 shadow-lg backdrop-blur-md"
             >
               <Plus className="h-6 w-6" />
@@ -353,10 +360,10 @@ export default function VaultPage() {
                         </div>
                       </div>
                       <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
-                        <button onClick={() => openEdit(s)} className="p-2 text-muted-foreground hover:text-primary rounded-full transition-all">
+                        <button onClick={() => openEdit(s)} className="p-2 text-muted-foreground hover:text-primary rounded-full transition-all bg-secondary/20">
                           <Pencil className="h-4 w-4" />
                         </button>
-                        <button onClick={() => handleDelete(s.id)} className="p-2 text-muted-foreground hover:text-destructive rounded-full transition-all">
+                        <button onClick={() => handleDelete(s.id)} className="p-2 text-muted-foreground hover:text-destructive rounded-full transition-all bg-secondary/20">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -368,25 +375,80 @@ export default function VaultPage() {
           </AnimatePresence>
         </div>
 
-        {/* New Secret Dialog */}
-        <Dialog open={open} onOpenChange={setOpen}>
+        {/* Unified Secret Dialog (New & Edit) */}
+        <Dialog open={open || !!editSecret} onOpenChange={(val) => {
+          if (!val) {
+            setOpen(false);
+            setEditSecret(null);
+          }
+        }}>
           <DialogContent className="max-w-[90vw] sm:max-w-xl w-full rounded-[40px] px-6 py-8 border-white/10 bg-card/90 backdrop-blur-2xl">
             <DialogHeader className="pb-4">
-              <DialogTitle className="text-2xl font-black text-center">{t("vault.new_secret")}</DialogTitle>
+              <DialogTitle className="text-2xl font-black text-center">
+                {editSecret ? t("vault.edit_secret") : t("vault.new_secret")}
+              </DialogTitle>
             </DialogHeader>
             <div className="space-y-5 pt-2">
-              <Input placeholder={t("vault.title_placeholder")} value={title} onChange={(e) => setTitle(e.target.value)} className="h-14 rounded-2xl bg-secondary/40 border-none" />
+              <Input
+                placeholder={t("vault.title_placeholder")}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="h-14 rounded-2xl bg-secondary/40 border-none px-5"
+              />
+
               <div className="grid grid-cols-4 gap-2">
                 {(["code", "message", "doc", "media"] as const).map((cat) => (
-                  <button key={cat} onClick={() => setCategory(cat)} className={cn("flex flex-col items-center justify-center gap-2 h-16 rounded-2xl border transition-all", category === cat ? "bg-primary text-primary-foreground" : "bg-secondary/40 border-none text-muted-foreground")}>
+                  <button
+                    key={cat}
+                    onClick={() => setCategory(cat)}
+                    className={cn(
+                      "flex flex-col items-center justify-center gap-2 h-16 rounded-2xl border transition-all",
+                      category === cat ? "bg-primary text-primary-foreground" : "bg-secondary/40 border-none text-muted-foreground"
+                    )}
+                  >
                     {cat === "code" ? <Lock className="h-4 w-4" /> : cat === "message" ? <Heart className="h-4 w-4" /> : cat === "doc" ? <FileText className="h-4 w-4" /> : <ImageIcon className="h-4 w-4" />}
                     <span className="text-[8px] font-black uppercase tracking-widest">{t("vault.cat_" + cat)}</span>
                   </button>
                 ))}
               </div>
-              <Textarea placeholder={t("vault.content_placeholder")} value={content} onChange={(e) => setContent(e.target.value)} className="min-h-[140px] rounded-[24px] bg-secondary/40 border-none p-5" />
-              <Button onClick={handleAdd} disabled={uploading} className="w-full h-15 rounded-[22px] text-lg font-black shadow-2xl">
-                {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : t("vault.encrypt_save")}
+
+              <div className="space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-primary px-1">{t("vault.beneficiary_placeholder")}</p>
+                <div className="grid grid-cols-1 gap-2">
+                  <Select value={beneficiaryId} onValueChange={setBeneficiaryId}>
+                    <SelectTrigger className="h-14 rounded-2xl bg-secondary/40 border-none px-5">
+                      <SelectValue placeholder={t("vault.no_beneficiary")} />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-white/10 bg-card/95 backdrop-blur-3xl">
+                      <SelectItem value="none" className="rounded-xl">{t("vault.no_beneficiary")}</SelectItem>
+                      {contacts.map((c) => (
+                        <SelectItem key={c.id} value={c.id} className="rounded-xl">{c.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <Textarea
+                placeholder={t("vault.content_placeholder")}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="min-h-[140px] rounded-[24px] bg-secondary/40 border-none p-5 text-base font-medium leading-relaxed"
+              />
+
+              <Button
+                onClick={editSecret ? handleEdit : handleAdd}
+                disabled={uploading}
+                className="w-full h-15 rounded-[22px] text-lg font-black shadow-2xl transition-all active:scale-[0.98]"
+              >
+                {uploading ? (
+                  <div className="flex items-center gap-3">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>{uploadProgress > 0 ? `${Math.round(uploadProgress)}%` : t("vault.encrypting")}</span>
+                  </div>
+                ) : (
+                  editSecret ? t("vault.save_edit") : t("vault.encrypt_save")
+                )}
               </Button>
             </div>
           </DialogContent>

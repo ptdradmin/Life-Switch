@@ -89,27 +89,27 @@ export default function LegalPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="group relative rounded-[36px] bg-foreground p-8 text-background shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden active:scale-[0.98] transition-all duration-500"
+                    className="group relative rounded-[36px] bg-primary/10 border border-primary/20 p-8 text-foreground shadow-[0_30px_60px_-15px_rgba(0,255,150,0.1)] overflow-hidden active:scale-[0.98] transition-all duration-500"
                 >
-                    <div className="absolute -top-12 -right-12 h-48 w-48 bg-primary/30 rounded-full blur-[70px] group-hover:bg-primary/50 transition-colors" />
+                    <div className="absolute -top-12 -right-12 h-48 w-48 bg-primary/20 rounded-full blur-[70px] group-hover:bg-primary/40 transition-colors" />
                     <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <ShieldAlert className="h-24 w-24" />
+                        <ShieldAlert className="h-24 w-24 text-primary" />
                     </div>
                     <div className="relative z-10 space-y-4">
                         <div className="flex items-center gap-3">
                             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/20 backdrop-blur-md border border-white/10">
                                 <CheckCircle2 className="h-5 w-5 text-primary" />
                             </div>
-                            <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-60">{t("legal_page.sovereignty")}</p>
+                            <p className="text-[11px] font-black uppercase tracking-[0.3em] text-primary">{t("legal_page.sovereignty")}</p>
                         </div>
-                        <p className="text-lg font-black leading-[1.3] tracking-tight text-white">
+                        <p className="text-lg font-black leading-[1.3] tracking-tight text-foreground">
                             {isPrivacy
                                 ? t("legal_page.privacy_engagement")
                                 : t("legal_page.tos_engagement")}
                         </p>
                         <div className="flex items-center gap-2 pt-2">
                             <div className="h-[2px] w-8 bg-primary/50" />
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">LIFE SWITCH PROTOCOL</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">LIFE SWITCH PROTOCOL</p>
                         </div>
                     </div>
                 </motion.div>
