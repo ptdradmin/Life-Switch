@@ -1,57 +1,57 @@
-# 🤝 Contribuer à Life Switch
+# 🤝 Contributing to Life Switch
 
-Merci de votre intérêt pour **Life Switch**. En tant que projet commercial à source ouverte, nous accueillons les contributions qui renforcent la sécurité, améliorent l'expérience utilisateur et étendent notre portée internationale.
-
----
-
-## 🚀 Comment Participer ?
-
-### 1. Signaler des Problèmes (Issues)
-Si vous trouvez un bug ou si vous avez une idée d'amélioration, [ouvrez une issue](https://github.com/ptdradmin/Life-Switch/issues). Soyez précis dans vos descriptions pour nous aider à reproduire le problème.
-
-### 2. Soumissions de Code (Pull Requests)
-1. **Fork** le dépôt.
-2. Créez une branche descriptive : `git checkout -b feature/nom-de-votre-feature` ou `git checkout -b fix/nom-du-bug`.
-3. Assurez-vous que votre code suit nos standards :
-   - **TypeScript** : Typage strict requis.
-   - **Tailwind CSS** : Respectez le design system existant.
-   - **i18n** : Toute nouvelle chaîne de caractères doit être localisée.
-4. **Testez** vos changements localement avec `npm run dev`.
-5. Soumettez votre **Pull Request** avec une explication détaillée de vos modifications.
+Thank you for your interest in **Life Switch**. As a commercial open-source project, we welcome contributions that enhance security, improve user experience, and expand our international reach.
 
 ---
 
-## 🌍 Internationalisation (i18n)
+## 🚀 How to Participate?
 
-Life Switch supporte actuellement **12 langues**. Pour contribuer aux traductions :
-- Les fichiers de langues se trouvent dans `src/i18n/locales/*.json`.
-- Ne modifiez pas directement le fichier `src/i18n/translations.ts` pour les textes longs ; utilisez les fichiers JSON.
-- Utilisez le script `sync_locales.js` pour maintenir la cohérence entre les langues.
-- **Règle d'or** : Aucun symbole visuel (comme les cadenas 🔒) ne doit être inclus dans les chaînes de traduction.
+### 1. Reporting Issues
+If you find a bug or have an idea for an improvement, please [open an issue](https://github.com/ptdradmin/Life-Switch/issues). Be as specific as possible in your descriptions to help us reproduce the problem.
+
+### 2. Submitting Code (Pull Requests)
+1. **Fork** the repository.
+2. Create a descriptive branch: `git checkout -b feature/your-feature-name` or `git checkout -b fix/bug-name`.
+3. Ensure your code follows our standards:
+   - **TypeScript**: Strict typing is required.
+   - **Tailwind CSS**: Respect the existing design system.
+   - **i18n**: Any new text string must be localized.
+4. **Test** your changes locally using `npm run dev`.
+5. Submit your **Pull Request** with a detailed explanation of your modifications.
 
 ---
 
-## 🛡️ Sécurité & Confidentialité
+## 🌍 Internationalization (i18n)
 
-La sécurité est notre priorité absolue (**Zero-Knowledge**).
-- **Vulnérabilités** : Si vous découvrez une faille de sécurité critique, **ne l'ouvrez pas en public**. Contactez-nous directement par email ou via le support de l'application pour une divulgation responsable.
-- **Crypto** : Toute modification touchant au module `CryptoJS` ou à la logique de chiffrement AES-256 fera l'objet d'un audit très strict.
+Life Switch currently supports **12 languages**. To contribute to translations:
+- Language files are located in `src/i18n/locales/*.json`.
+- Do not directly modify the `src/i18n/translations.ts` file for long texts; use the JSON files instead.
+- Use the `sync_locales.js` script to maintain consistency across languages.
+- **Golden Rule**: No visual symbols (like padlocks 🔒) should be included within the translation strings.
 
 ---
 
-## 🛠️ Stack de Développement
+## 🛡️ Security & Privacy
 
-Assurez-vous d'avoir les outils suivants pour un environnement de travail optimal :
+Security is our top priority (**Zero-Knowledge**).
+- **Vulnerabilities**: If you discover a critical security flaw, **do not disclose it publicly**. Please contact us directly via email or the app's support for responsible disclosure.
+- **Cryptography**: Any modification affecting the `CryptoJS` module or the AES-256 encryption logic will undergo a very strict audit.
+
+---
+
+## 🛠️ Development Stack
+
+Ensure you have the following tools for an optimal development environment:
 - **Node.js 18+**
-- **Firebase CLI** (pour l'hébergement et les fonctions)
-- **Supabase CLI** (pour le stockage et la base de données)
+- **Firebase CLI** (for hosting and functions)
+- **Supabase CLI** (for storage and database)
 
 ---
 
-## ⚖️ Licence & Code de Conduite
+## ⚖️ License & Code of Conduct
 
-- En contribuant, vous acceptez que votre code soit publié sous licence **GPLv3**.
-- Restez professionnel, respectueux et constructif dans tous vos échanges.
+- By contributing, you agree that your code will be published under the **GPLv3** license.
+- Remain professional, respectful, and constructive in all your interactions.
 
 ---
-*Life Switch — Construisons ensemble la forteresse numérique de demain.*
+*Life Switch — Let's build tomorrow's digital fortress together.*

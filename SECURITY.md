@@ -1,33 +1,33 @@
-# Politique de Sécurité (Security Policy)
+# Security Policy
 
-## Versions Supportées
+## Supported Versions
 
-Nous maintenons et appliquons des mises à jour de sécurité pour les versions récentes du protocole Life Switch :
+We maintain and apply security updates for the recent versions of the Life Switch protocol:
 
-| Version | Statut |
+| Version | Status |
 | ------- | ------------------ |
-| >= 1.2.x | :white_check_mark: Supporté |
-| < 1.1.x | :x: Fin de vie |
+| >= 1.2.x | :white_check_mark: Supported |
+| < 1.1.x | :x: End of life |
 
-## Signalement d'une vulnérabilité (Bug Bounty / Divulgation Privée)
+## Reporting a Vulnerability (Bug Bounty / Private Disclosure)
 
-Life Switch repose sur une architecture stricte de **Zero-Knowledge** via un chiffrement asymétrique et symétrique (AES-256-GCM). Toute vulnérabilité permettant de compromettre ou de contourner ce chiffrement est prise extrêmement au sérieux par notre équipe.
+Life Switch relies on a strict **Zero-Knowledge** architecture using asymmetric and symmetric encryption (AES-256-GCM). Any vulnerability allowing the compromise or bypass of this encryption is taken extremely seriously by our team.
 
-**SVP, NE CRÉEZ PAS DE TICKET GITHUB PUBLIC POUR RAPPORTER DES FAILLES CRITIQUES SUR L'ARCHITECTRE.**
+**PLEASE DO NOT CREATE A PUBLIC GITHUB ISSUE TO REPORT CRITICAL ARCHITECTURE FLAWS.**
 
-Afin de protéger nos utilisateurs avant qu'un correctif de sécurité (patch) ne soit déployé, nous vous prions de suivre notre processus de divulgation responsable :
+To protect our users before a security patch can be deployed, we kindly ask you to follow our responsible disclosure process:
 
-1. Contactez l'équipe de sécurité directement par email (chiffré de préférence) à : **security@life-switch.app**.
-2. Fournissez une description détaillée du problème, des étapes pour le reproduire (Proof of Concept), et des informations sur votre environnement de test.
-3. Ne divulguez pas les détails de la faille en ligne avant que l'équipe n'ait pu déployer un correctif.
-4. Nous accuserons réception de votre rapport dans un délai de **48 heures**.
+1. Contact the security team directly by email (preferably encrypted) at: **security@life-switch.app**.
+2. Provide a detailed description of the issue, steps to reproduce it (Proof of Concept), and information about your testing environment.
+3. Do not disclose the details of the flaw online until the team has been able to deploy a fix.
+4. We will acknowledge receipt of your report within **48 hours**.
 
-### Bug Bounty et Récompenses Pécuniaires
+### Bug Bounty and Financial Rewards
 
-Bien que Life Switch ait une base open-source participative, les découvertes de vulnérabilités critiques affectant nos infrastructures distantes (Règles de sécurité Firestore, RLS Supabase) ou nos implémentations de protocoles cryptographiques (chiffrement des secrets sur le client) peuvent être éligibles à des compensations. Chaque divulgation est évaluée au cas par cas par l'administration du projet selon son niveau de sévérité (CVSS).
+Although Life Switch has a participatory open-source base, discoveries of critical vulnerabilities affecting our remote infrastructures (Firestore Security Rules, Supabase RLS) or our implementations of cryptographic protocols (client-side secret encryption) may be eligible for compensation. Each disclosure is evaluated on a case-by-case basis by the project administration according to its severity level (CVSS).
 
-### Ce Qui est Hors de Portée
+### What is Out of Scope
 
-* Déni de Service (DDoS) sur notre base de données hébergée - Firebase et Supabase assurent déjà la sécurité de leurs API.
-* Problèmes de configuration de domaines DNS ne menant pas au contournement de la Politique de Même Origine (SOP) ou au détournement de sessions.
-* Spam de clés API générant des quotas, ou toute tentative de détruire activement le compte d'un autre utilisateur sans passer par une faille identifiée.
+* Denial of Service (DDoS) on our hosted database - Firebase and Supabase already ensure the security of their APIs.
+* DNS domain configuration issues that do not lead to bypassing the Same-Origin Policy (SOP) or session hijacking.
+* API key spamming generating quotas, or any attempt to actively destroy another user's account without going through an identified flaw.

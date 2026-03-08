@@ -11,81 +11,81 @@
 
   ---
 
-  **Life Switch** est une plateforme commerciale de succession numérique garantissant la transmission sécurisée de vos secrets, identifiants et documents à vos proches en cas d'impossibilité de répondre.
+  **Life Switch** is a commercial digital legacy platform ensuring the secure transmission of your secrets, credentials, and documents to your loved ones in the event you are unable to respond.
 
-  [Découvrir l'App](https://life-switch-mvp-2026.web.app) • [Contribuer (Help Wanted)](CONTRIBUTING.md) • [Sécurité & Bug Bounty](SECURITY.md)
+  [Discover the App](https://life-switch-mvp-2026.web.app) • [Contribute (Help Wanted)](CONTRIBUTING.md) • [Security & Bug Bounty](SECURITY.md)
 </div>
 
-## 💎 Fonctionnalités Elite
+## 💎 Elite Features
 
-| Fonctionnalité | Description |
+| Feature | Description |
 | :--- | :--- |
-| **🛡️ Zero-Knowledge** | Chiffrement AES-256 local. Vos données sont illisibles même pour nous. |
-| **🌍 World Ready** | Interface localisée en **12 langues** (FR, EN, ES, DE, IT, PT, AR, ZH, JA, RU, NL, TR). |
-| **⏱️ Smart Pulse** | Protocole d'inactivité intelligent avec déclenchement automatique vers vos bénéficiaires. |
-| **🤖 Carnet AI** | Assistant prédictif analysant vos émotions et votre score de sécurité en temps réel. |
-| **📂 Coffre Hybride** | Stockage haute fidélité pour textes, codes, photos et vidéos 4K. |
-| **🔒 Biométrie** | Accès sécurisé par FaceID/TouchID nativement intégré via Capacitor. |
+| **🛡️ Zero-Knowledge** | Local AES-256 encryption. Your data is unreadable, even to us. |
+| **🌍 World Ready** | Localized interface in **12 languages** (EN, FR, ES, DE, IT, PT, AR, ZH, JA, RU, NL, TR). |
+| **⏱️ Smart Pulse** | Intelligent inactivity protocol with automatic triggering to your beneficiaries. |
+| **🤖 Carnet AI** | Predictive assistant analyzing your emotions and security score in real-time. |
+| **📂 Hybrid Vault** | High-fidelity storage for texts, codes, photos, and 4K videos. |
+| **🔒 Biometrics** | Secure access via natively integrated FaceID/TouchID through Capacitor. |
 
-## 🛠️ Infrastructure Multi-Cloud
+## 🛠️ Multi-Cloud Infrastructure
 
-L'architecture de Life Switch repose sur une synergie technologique de pointe pour une fiabilité absolue :
+Life Switch's architecture relies on bleeding-edge technological synergy for absolute reliability:
 
-- **Cœur Applicatif** : `React 18` + `TypeScript` + `Vite`
-- **Design Premium** : `Tailwind CSS` + `Framer Motion` + `Shadcn/ui`
-- **Identity & Realtime** : `Firebase Auth` & `Cloud Firestore`
-- **Cloud Storage** : `Supabase Storage` (Buckets isolés et chiffrés)
-- **Calcul IA** : `OpenRouter` & `Groq` (Inférence ultra-rapide)
-- **Native Bridge** : `Capacitor JS` for iOS & Android
-- **Localisation** : `i18next` avec injection dynamique
+- **Application Core**: `React 18` + `TypeScript` + `Vite`
+- **Premium Design**: `Tailwind CSS` + `Framer Motion` + `Shadcn/ui`
+- **Identity & Realtime**: `Firebase Auth` & `Cloud Firestore`
+- **Cloud Storage**: `Supabase Storage` (Isolated & encrypted buckets)
+- **AI Compute**: `OpenRouter` & `Groq` (Ultra-fast inference)
+- **Native Bridge**: `Capacitor JS` for iOS & Android
+- **Localization**: `i18next` with dynamic injection
 
-## 🧠 Architecture Zero-Knowledge
+## 🧠 Zero-Knowledge Architecture
 
 > "Your privacy is our code."
 
-1. **Encryption at Edge** : Les secrets sont chiffrés via `CryptoJS` avant de quitter l'appareil.
-2. **Key Derivation** : Utilisation de sels dynamiques et de l'UID Firebase pour une entropie maximale.
-3. **Decentralized Storage** : Séparation stricte entre les métadonnées (Firestore) et les assets lourds (Supabase).
+1. **Encryption at Edge**: Secrets are encrypted via `CryptoJS` before they ever leave the device.
+2. **Key Derivation**: Utilizing dynamic salts and the Firebase UID for maximum entropy.
+3. **Decentralized Storage**: Strict separation between metadata (Firestore) and heavy assets (Supabase).
 
-## 🚀 Guide de Démarrage Rapide
+## 🚀 Quick Start Guide
 
 ```bash
-# 1. Clonez l'excellence
+# 1. Clone excellence
 git clone https://github.com/ptdradmin/Life-Switch.git
 
-# 2. Installez le moteur
+# 2. Install the engine
 npm install
 
-# 3. Configurez vos clés et secrets d'API
+# 3. Configure your API keys and secrets
 cp .env.example .env.local
 
-# 4. Allumez les propulseurs
+# 4. Ignite thrusters
 npm run dev
 ```
 
-### 🔐 Gestion des Secrets (Variables d'Environnement)
+### 🔐 Secrets Management (Environment Variables)
 
-Pour faire tourner le projet **Life Switch** en local, vous avez besoin de configurer Firebase, Supabase et les clés des modèles d'intelligence artificielle utilisés par "Carnet". 
-Ouvrez votre fichier `.env.local` et ajoutez-y vos jetons de développement :
+To run the **Life Switch** project locally, you need to configure Firebase, Supabase, and the artificial intelligence model keys used by the "Carnet" journal. 
+Open your `.env.local` file and add your development tokens:
 
-| Clé | Fournisseur | Rôle dans l'application |
+| Key | Provider | Role in the application |
 | :--- | :--- | :--- |
-| `VITE_FIREBASE_*` | **Firebase** | Identifiants pour Firebase Auth et Cloud Firestore. |
-| `VITE_SUPABASE_URL` | **Supabase** | Stockage haute-fidélité pour les images et vidéos 4K du coffre. |
-| `VITE_SUPABASE_ANON_KEY` | **Supabase** | Clé pour l'API publique (restreinte par nos règles RLS). |
-| `VITE_AES_SALT` | **Sécurité** | Un sel arbitraire utilisé localement pour renforcer la dérivation cryptographique. |
-| `VITE_OPENROUTER_API_KEYS`| **OpenRouter** | Clés API pour solliciter les modèles IA (Gemini, Llama) du journal intime sans lier vos cartes bleues. |
-| `VITE_GROQ_API_KEYS` | **Groq** | Utilisé comme "fallback" d'inférence ultra-rapide si OpenRouter est indisponible. |
+| `VITE_FIREBASE_*` | **Firebase** | Credentials for Firebase Auth and Cloud Firestore. |
+| `VITE_SUPABASE_URL` | **Supabase** | High-fidelity storage for vault images and 4K videos. |
+| `VITE_SUPABASE_ANON_KEY` | **Supabase** | Key for the public API (restricted by our RLS rules). |
+| `VITE_AES_SALT` | **Security** | An arbitrary salt used locally to strengthen cryptographic derivation. |
+| `VITE_OPENROUTER_API_KEYS`| **OpenRouter** | API keys to query the AI models (Gemini, Llama) without linking your credit card. |
+| `VITE_GROQ_API_KEYS` | **Groq** | Used as an ultra-fast inference "fallback" if OpenRouter is unavailable. |
 
-**Bonus Open-Source :** Il n'y a pas besoin de payer pour contribuer au projet : inscrivez-vous sur [Firebase (Spark Plan)](https://firebase.google.com/), [Supabase (Plan Gratuit)](https://supabase.com/), [OpenRouter (Filtre Gratuit)](https://openrouter.ai/) et [Groq](https://console.groq.com/).
+**Open-Source Bonus:** There is no need to pay to contribute to the project: sign up for [Firebase (Spark Plan)](https://firebase.google.com/), [Supabase (Free Plan)](https://supabase.com/), [OpenRouter (Free Filter)](https://openrouter.ai/) and [Groq](https://console.groq.com/).
 
-## ⚖️ Licence & Commercialisation
+## ⚖️ License & Commercialization
 
-Propulsé sous licence **GPLv3**. Solution prête pour un déploiement commercial à grande échelle. Pour en savoir plus sur la manière de participer au projet, consultez notre fichier [CONTRIBUTING.md](CONTRIBUTING.md).
+Powered under the **GPLv3** license. A ready-to-deploy solution for large-scale commercial networks. To learn more about how to participate in the project, please consult our [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 ---
 
 <div align="center">
-  <sub>© 2026 Life Switch. Tous droits réservés. <br> 
-  <i>Parce que votre héritage mérite une forteresse numérique.</i></sub>
+  <sub>© 2026 Life Switch. All rights reserved. <br> 
+  <i>Because your legacy deserves a digital fortress.</i></sub>
 </div>
