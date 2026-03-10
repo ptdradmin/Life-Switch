@@ -14,6 +14,7 @@ lerna-debug.log*
 firebase-service-account.json
 google-services.json
 GoogleService-Info.plist
+public/firebase-messaging-sw.js
 
 # Build artifacts
 dist/
